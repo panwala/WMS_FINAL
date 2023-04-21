@@ -37,6 +37,19 @@ export const generateQrcodes = async (req, res, next) => {
       return next(new InternalServerError());
     }
   };
+  export const listdummyQrcodes = async (req, res, next) => {
+    logger.log(level.info, `✔ Controller listdummyQrcodes()`);
+    try {
+       
+      let qrhouseData = await QrHouses.findData();
+      let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
+      return handleResponse(res, dataObject, 200);
+    } catch (e) {
+      if (e && e.message) return next(new BadRequestError(e.message));
+      logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+      return next(new InternalServerError());
+    }
+  };
 export const checkqrhouseregisteredornot = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller checkqrhouseregisteredornot()`);

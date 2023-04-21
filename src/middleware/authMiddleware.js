@@ -27,13 +27,13 @@ export const AuthMiddleware = async (req, res, next) => {
         console.log("accessToken", accessToken);
         let decoded = await JWT.verifyAccessToken(accessToken);
         console.log("result", decoded);
-        let { _id } = decoded;
-        console.log("id of user", _id);
-        let userData = await User.findOneDocument({ _id: _id });
-        if (userData) {
-          req[CURRENT_USER] = userData;
-          return next();
-        }
+        // let { _id } = decoded;
+        // console.log("id of user", _id);
+        // let userData = await User.findOneDocument({ _id: _id });
+        // if (userData) {
+        //   req[CURRENT_USER] = userData;
+        //   return next();
+        // }
       }
     }
   } catch (error) {

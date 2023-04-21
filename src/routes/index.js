@@ -5,6 +5,7 @@ import UserRoutes from "./user";
 import WardRoutes from "./ward";
 import NagarpalikaRoutes from "./nagarpalika";
 import QrRoutes from "./qrhouse";
+import {AuthMiddleware} from "../middleware/authMiddleware"
 
 const routes = new Router();
 const PATH = {
@@ -16,7 +17,7 @@ const PATH = {
   QR:"/qrs"
 };
 
-routes.get("/healthCheck", (req, res) => {
+routes.get("/healthCheck", AuthMiddleware,(req, res) => {
   let dataObject = {
     message: "Server is running fine",
   };
