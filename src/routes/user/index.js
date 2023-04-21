@@ -44,10 +44,10 @@ routes
 //   usersCtrl.login);
 // routes.route(PATH.VERIFY_OTP).post(usersCtrl.verifyOTP);
 routes.route(PATH.UPDATE_USER).patch(
-  [
-    UserValidate(USER_CONSTANTS.UPDATE_SINGLE_USER),
-    ErrorMiddleware.ExpressValidatorError,
-  ], 
+  // [
+  //   UserValidate(USER_CONSTANTS.UPDATE_SINGLE_USER),
+  //   ErrorMiddleware.ExpressValidatorError,
+  // ], 
   usersCtrl.updateSingleUser);
 routes
   .route(PATH.OPERATION_USER)
