@@ -7,6 +7,7 @@ const routes = new Router();
 const PATH = {
   ROOT: "/",
   ROLEID: "/:roleId",
+  VIEW_ALL_WARDS_OF_NAGAR_PALIKA:"/viewallwardsofnagarpalika"
 };
 routes
   .route(PATH.ROOT)
@@ -17,7 +18,7 @@ routes
     // ],
     wardCtrl.addWard
   )
-  .get(wardCtrl.viewWard);
+  routes.route(PATH.VIEW_ALL_WARDS_OF_NAGAR_PALIKA).post(wardCtrl.viewWard);
 // routes
 //   .route(PATH.ROLEID)
 //   .get(
