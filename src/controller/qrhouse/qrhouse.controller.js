@@ -102,6 +102,7 @@ export const updateSingleQrhouse = async (req, res, next) => {
         wastecollectionvalue,
         reason,
         username,
+        propertyType,
         mobile_no,
         lat,
         long,
@@ -123,7 +124,8 @@ export const updateSingleQrhouse = async (req, res, next) => {
         long,
         nagarpalikaId,
         wardId,
-        registrationmemberId
+        registrationmemberId,
+        propertyType
     };
     let QrhouseData = await QrHouses.updateData(
       { _id: mongoose.Types.ObjectId(req.body.qrId) },

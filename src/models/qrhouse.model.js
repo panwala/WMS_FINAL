@@ -8,6 +8,9 @@ const schema = {
     type: String,//0:Residential,1:Commercial
     trim: true,
   },
+  propertyType:{
+    type:String
+  },
   houseno:String,
   houseaddress:String,
   city:String,

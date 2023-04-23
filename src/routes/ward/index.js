@@ -17,7 +17,7 @@ routes
     // ],
     wardCtrl.addWard
   )
-//   .get(rolesCtrl.viewRole);
+  .get(wardCtrl.viewWard);
 // routes
 //   .route(PATH.ROLEID)
 //   .get(

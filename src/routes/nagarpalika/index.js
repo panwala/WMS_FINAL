@@ -17,7 +17,7 @@ routes
     // ],
     nagarpalikaCtrl.addNagarpalika
   )
-//   .get(rolesCtrl.viewRole);
+  .get(nagarpalikaCtrl.viewNagarpalika);
 // routes
 //   .route(PATH.ROLEID)
 //   .get(
