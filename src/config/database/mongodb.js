@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { logger, level } from "../../config/logger/logger";
 import { defaultUserData } from "../../services/user/user.service";
-const URL =process.env.MONGO_URL;
+const URL =process.env.MONGO_URL  || "mongodb+srv://wms:UMZ26MgDUYrwmu2T@wms.1uz19vh.mongodb.net/test?authSource=admin&replicaSet=atlas-3nnelh-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
 const OPEN_EVENT = "open";
 const ERROR_EVENT = "error";
 

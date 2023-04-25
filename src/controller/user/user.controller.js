@@ -923,6 +923,69 @@ export const Registrationworkerlogin = async (req, res, next) => {
     return next(new InternalServerError());
   }
 };
+
+export const Adminlogin = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr Adminlogin()`);
+    const { email, password } = req.body;
+    let data = await Users.aggregate([
+      {
+        $match: {
+          email,
+        },
+      },  {
+            '$lookup': {
+              'from': 'roles', 
+              'localField': 'roleId', 
+              'foreignField': '_id', 
+              'as': 'roledata'
+            }
+          }, {
+            '$unwind': {
+              'path': '$roledata', 
+              'preserveNullAndEmptyArrays': true
+              }
+            },
+            {
+              '$project': {
+                "_id":1,
+                "name":1,
+                "adharno":1,
+                "drivinglicenseno":1,
+                "username":1,
+                "email":1,
+                'mobile_no': 1,
+                "gender":1,
+                "DOB":1,
+                "roledata":1,
+                "warddata":1,
+                "nagarpalikadata":1,
+                "password":1,
+              }
+            }
+    ]);
+    // console.log(data)
+    if(data.length>0)
+    {
+      console.log("userData", data[0]);
+      const validateUserData = await decrypt(password, data[0].password);
+      if (validateUserData) {
+        data=data[0]
+      console.log("userData", data);
+        let dataObject = {
+          message: "Admin login successfully.",
+          data
+        };
+        return handleResponse(res, dataObject);
+      }
+  }
+    return next(new UnauthorizationError());
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
 // export const getAllUserRoleWise = async (req, res, next) => {
 //   try {
 //     logger.log(level.info, `✔ Controller getAllUserRoleWise()`);

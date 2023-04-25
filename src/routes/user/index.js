@@ -6,7 +6,7 @@ import { CONSTANTS as USER_CONSTANTS } from "../../constants/user/user";
 const routes = new Router();
 const PATH = {
   ROOT: "/",
-  LOGIN: "/login",
+  ADMIN_LOGIN: "/adminlogin",
   SIGNUP: "/signup",
   VERIFY_OTP: "/verifyOTP",
   FETCH_USER_ROLE_WISE: "/fetchuserrolewise",
@@ -36,12 +36,7 @@ routes
     usersCtrl.register
   );
 
-// routes.route(PATH.LOGIN).post(
-//   [
-//     UserValidate(USER_CONSTANTS.LOGIN_USER),
-//     ErrorMiddleware.ExpressValidatorError,
-//   ],
-//   usersCtrl.login);
+routes.route(PATH.ADMIN_LOGIN).post(usersCtrl.Adminlogin);
 // routes.route(PATH.VERIFY_OTP).post(usersCtrl.verifyOTP);
 routes.route(PATH.UPDATE_USER).patch(
   // [
