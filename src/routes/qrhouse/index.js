@@ -9,7 +9,8 @@ const PATH = {
   GENERATE_QR_CODES:"/generateqrcodes",
   CHECK_QR_REGISTERED_OR_NOT:"/checkqrcoderegisteredornot",
   UPDATE_QR_HOUSE_DETAILS:"/updateqrhousedetails",
-  LIST_QR_CODES:"/listqrcodes"
+  LIST_QR_CODES:"/listqrcodes",
+  LIST_QR_CODES_BY_NAGARPALIKA:"/listqrcodebynagarpalika"
 //   ROLEID: "/:roleId",
 };
 routes
@@ -21,6 +22,7 @@ routes
     // ],
     qrhouse.addQrhouses
   )
+  routes.route(PATH.LIST_QR_CODES_BY_NAGARPALIKA).post(qrhouse.listparticularnagarpalikaQrcodes)
   routes.route(PATH.GENERATE_QR_CODES).post(qrhouse.generateQrcodes)
   routes.route(PATH.CHECK_QR_REGISTERED_OR_NOT).post(qrhouse.checkqrhouseregisteredornot)
   routes.route(PATH.UPDATE_QR_HOUSE_DETAILS).post(qrhouse.updateSingleQrhouse)

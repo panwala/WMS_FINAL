@@ -27,7 +27,11 @@ export const generateQrcodes = async (req, res, next) => {
     try {
         for(let i=0;i<req.body.qrcount;i++)
         {
-            let nagarpalikaData = await QrHouses.createData({housetype:req.body.housetype});
+            let nagarpalikaData = await QrHouses.createData(
+              {
+                housetype:req.body.housetype,
+                nagarpalikaId:req.body.nagarpalikaId
+              });
         }
       let dataObject = { message: "Qr codes created  succesfully" };
       return handleResponse(res, dataObject, 201);
@@ -42,6 +46,19 @@ export const generateQrcodes = async (req, res, next) => {
     try {
        
       let qrhouseData = await QrHouses.findData();
+      let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
+      return handleResponse(res, dataObject, 200);
+    } catch (e) {
+      if (e && e.message) return next(new BadRequestError(e.message));
+      logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+      return next(new InternalServerError());
+    }
+  };
+  export const listparticularnagarpalikaQrcodes = async (req, res, next) => {
+    logger.log(level.info, `✔ Controller listparticularnagarpalikaQrcodes()`);
+    try {
+       
+      let qrhouseData = await QrHouses.findData({nagarpalikaId:req.body.nagarpalikaId});
       let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
       return handleResponse(res, dataObject, 200);
     } catch (e) {
