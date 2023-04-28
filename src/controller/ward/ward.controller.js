@@ -61,9 +61,9 @@ export const viewSingleWard = async (req, res, next) => {
 export const updateSingleWard = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller updateSingleWard()`);
-    let { wardno,nagarpalikaId } = req.body;
+    let { wardno,nagarpalikaId,wardname } = req.body;
     let updateDeviceObject = {
-        wardno,nagarpalikaId
+        wardno,nagarpalikaId,wardname
     };
     let WardData = await Wards.updateData(
       { _id: mongoose.Types.ObjectId(req.params.wardId) },

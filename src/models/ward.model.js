@@ -7,6 +7,10 @@ const schema = {
     type: String,
     trim: true,
   },
+  wardname: {
+    type: String,
+    trim: true,
+  },
   nagarpalikaId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "NagarPalikas",
