@@ -25,15 +25,16 @@ export const addQrhouses = async (req, res, next) => {
 export const generateQrcodes = async (req, res, next) => {
     logger.log(level.info, `✔ Controller generateQrcodes()`);
     try {
+      var nagarpalikaData;
         for(let i=0;i<req.body.qrcount;i++)
         {
-            let nagarpalikaData = await QrHouses.createData(
+             nagarpalikaData = await QrHouses.createData(
               {
                 housetype:req.body.housetype,
                 nagarpalikaId:req.body.nagarpalikaId
               });
         }
-      let dataObject = { message: "Qr codes created  succesfully" };
+      let dataObject = { message: "Qr codes created  succesfully", data:nagarpalikaData };
       return handleResponse(res, dataObject, 201);
     } catch (e) {
       if (e && e.message) return next(new BadRequestError(e.message));
@@ -165,6 +166,95 @@ export const removeSingleNagarpalika = async (req, res, next) => {
 
     const query = { _id: req.params.nagarpalikaId };
     /*let removedData =*/ await QrHouses.deleteData(query);
+    let dataObject = {
+      message: "Nagarpalika deleted successfully.",
+      // data: removedData,
+    };
+    return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+
+
+export const listonlyregisteredQrcodes = async (req, res, next) => {
+  logger.log(level.info, `✔ Controller listonlyregisteredQrcodes()`);
+  try {
+    let answer1 = req.body.nagarpalikaId
+    ? mongoose.Types.ObjectId(req.body.nagarpalikaId)
+    : {
+        $nin: [],
+      };
+      let answer2 = req.body.wardId
+      ? mongoose.Types.ObjectId(req.body.wardId)
+      : {
+          $nin: [],
+        };
+    let qrhouseData = await QrHouses.aggregate([
+      {
+        '$match': {
+          'nagarpalikaId': answer1, 
+          'wardId': answer2
+        }
+      }, {
+        '$lookup': {
+          'from': 'nagarpalikas', 
+          'localField': 'nagarpalikaId', 
+          'foreignField': '_id', 
+          'as': 'nagarpalikadata'
+        }
+      }, {
+        '$lookup': {
+          'from': 'wards', 
+          'localField': 'wardId', 
+          'foreignField': '_id', 
+          'as': 'warddata'
+        }
+      }, {
+        '$unwind': {
+          'path': '$nagarpalikadata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$unwind': {
+          'path': '$warddata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$addFields': {
+          'warddataexist': {
+            '$ifNull': [
+              '$warddata', null
+            ]
+          }
+        }
+      }, {
+        '$match': {
+          'warddataexist': {
+            '$ne': null
+          }
+        }
+      }
+    ]);
+    let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
+    return handleResponse(res, dataObject, 200);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+export const removemultipleqrcodes = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controller removemultipleqrcodes()`);
+
+    const query = { _id: req.params.nagarpalikaId };
+    /*let removedData =*/ await QrHouses.deleteMultipleData({_id:req.body.qrid});
     let dataObject = {
       message: "Nagarpalika deleted successfully.",
       // data: removedData,
