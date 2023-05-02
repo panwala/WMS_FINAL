@@ -64,7 +64,7 @@ export const generateQrcodes = async (req, res, next) => {
       let qrhouseData = await QrHouses.aggregate([
         {
           '$match': {
-            'nagarpalikaId': req.body.nagarpalikaId, 
+            'nagarpalikaId':mongoose.Types.ObjectId(req.body.nagarpalikaId), 
           }
         }, {
           '$lookup': {
@@ -73,12 +73,27 @@ export const generateQrcodes = async (req, res, next) => {
             'foreignField': '_id', 
             'as': 'nagarpalikadata'
           }
-        }, {
+        },
+        {
+          '$lookup': {
+            'from': 'wards', 
+            'localField': 'wardId', 
+            'foreignField': '_id', 
+            'as': 'warddata'
+          }
+        }, 
+        {
           '$unwind': {
             'path': '$nagarpalikadata', 
             'preserveNullAndEmptyArrays': true
           }
         }, 
+        {
+          '$unwind': {
+            'path': '$warddata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        },
       ]);
       let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
       return handleResponse(res, dataObject, 200);
