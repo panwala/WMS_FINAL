@@ -986,97 +986,82 @@ export const Adminlogin = async (req, res, next) => {
     return next(new InternalServerError());
   }
 };
-// export const getAllUserRoleWise = async (req, res, next) => {
-//   try {
-//     logger.log(level.info, `✔ Controller getAllUserRoleWise()`);
-//     const userData = await Users.aggregate([
-//       {
-//         $match: {
-//           roleId: req.query.roleId
-//             ? mongoose.Types.ObjectId(req.query.roleId)
-//             : mongoose.Types.ObjectId("6215dc2ab9dcbf49b86de4bf"),
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "roles",
-//           localField: "roleId",
-//           foreignField: "_id",
-//           as: "demo",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$demo",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $replaceRoot: {
-//           newRoot: {
-//             userId: {
-//               $concat: [
-//                 {
-//                   $toString: "$_id",
-//                 },
-//               ],
-//             },
-//             first_Name: {
-//               $concat: ["$first_Name"],
-//             },
-//             licenseno: {
-//               $concat: ["$licenseno"],
-//             },
-//             last_Name: {
-//               $concat: ["$last_Name"],
-//             },
-//             email: {
-//               $concat: ["$email"],
-//             },
-//             Address: {
-//               $concat: ["$Address"],
-//             },
-//             password: {
-//               $concat: ["$password"],
-//             },
-//             adharcard: {
-//               $concat: ["$adharcard"],
-//             },
-//             gender: {
-//               $concat: ["$gender"],
-//             },
-//             DOB: {
-//               $toDate: ["$DOB"],
-//             },
-//             mobile_no: {
-//               $toLong: ["$mobile_no"],
-//             },
-//             GSTNO: {
-//               $concat: ["$GSTNO"],
-//             },
-//             roleId: {
-//               $concat: [
-//                 {
-//                   $toString: "$roleId",
-//                 },
-//               ],
-//             },
-//             role: {
-//               $concat: ["$demo.title"],
-//             },
-//           },
-//         },
-//       },
-//     ]);
-//     let dataObject = {
-//       message: "Details fetched successfully.",
-//       data: userData,
-//       count: userData.length,
-//     };
-//     return handleResponse(res, dataObject);
-//   } catch (e) {
-//     if (e && e.message) return next(new BadRequestError(e.message));
-//     logger.log(level.error, `Error: ${JSON.stringify(e)}`);
-//     return next(new InternalServerError());
-//   }
-// };
+export const getAllUserRoleWise = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controller getAllUserRoleWise()`);
+    let answer1 = req.body.nagarpalikaId
+    ? mongoose.Types.ObjectId(req.body.nagarpalikaId)
+    : {
+        $nin: [],
+      };
+      let answer2 = req.body.wardId
+      ? mongoose.Types.ObjectId(req.body.wardId)
+      : {
+          $nin: [],
+        };
+        let answer3 = req.body.roleId
+      ? mongoose.Types.ObjectId(req.body.roleId)
+      : {
+          $nin: [],
+        };
+    const userData = await Users.aggregate([
+      {
+        $match: {
+            'roleId': answer3,
+            'nagarpalikaId': answer1, 
+            'wardId': answer2
+        },
+      },
+      {
+        $lookup: {
+          from: "roles",
+          localField: "roleId",
+          foreignField: "_id",
+          as: "demo",
+        },
+      },
+      {
+        $unwind: {
+          path: "$demo",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+      '$lookup': {
+        'from': 'nagarpalikas', 
+        'localField': 'nagarpalikaId', 
+        'foreignField': '_id', 
+        'as': 'nagarpalikadata'
+      }
+    }, {
+      '$lookup': {
+        'from': 'wards', 
+        'localField': 'wardId', 
+        'foreignField': '_id', 
+        'as': 'warddata'
+      }
+    }, {
+      '$unwind': {
+        'path': '$nagarpalikadata', 
+        'preserveNullAndEmptyArrays': true
+      }
+    }, {
+      '$unwind': {
+        'path': '$warddata', 
+        'preserveNullAndEmptyArrays': true
+      }
+    }
+      
+    ]);
+    let dataObject = {
+      message: "Details fetched successfully.",
+      data: userData,
+      count: userData.length,
+    };
+    return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};

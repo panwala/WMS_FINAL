@@ -15,7 +15,7 @@ const PATH = {
   OPERATION_USER: "/useroperation/:userId",
 };
 // routes.route(PATH.ROOT).get(usersCtrl.getAllUser);
-// routes.route(PATH.FETCH_USER_ROLE_WISE).get(usersCtrl.getAllUserRoleWise);
+  routes.route(PATH.FETCH_USER_ROLE_WISE).post(usersCtrl.getAllUserRoleWise);
 // routes
 //   .route(PATH.FORGOT_PASSWORD)
 //   .post(
