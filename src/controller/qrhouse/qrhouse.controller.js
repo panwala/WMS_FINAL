@@ -26,6 +26,7 @@ export const generateQrcodes = async (req, res, next) => {
     logger.log(level.info, `✔ Controller generateQrcodes()`);
     try {
       var nagarpalikaData;
+      let finalArray=[]
         for(let i=0;i<req.body.qrcount;i++)
         {
              nagarpalikaData = await QrHouses.createData(
@@ -33,8 +34,9 @@ export const generateQrcodes = async (req, res, next) => {
                 housetype:req.body.housetype,
                 nagarpalikaId:req.body.nagarpalikaId
               });
+              finalArray.push(nagarpalikaData)
         }
-      let dataObject = { message: "Qr codes created  succesfully", data:nagarpalikaData };
+      let dataObject = { message: "Qr codes created  succesfully", data:finalArray };
       return handleResponse(res, dataObject, 201);
     } catch (e) {
       if (e && e.message) return next(new BadRequestError(e.message));
@@ -59,7 +61,25 @@ export const generateQrcodes = async (req, res, next) => {
     logger.log(level.info, `✔ Controller listparticularnagarpalikaQrcodes()`);
     try {
        
-      let qrhouseData = await QrHouses.findData({nagarpalikaId:req.body.nagarpalikaId});
+      let qrhouseData = await QrHouses.aggregate([
+        {
+          '$match': {
+            'nagarpalikaId': req.body.nagarpalikaId, 
+          }
+        }, {
+          '$lookup': {
+            'from': 'nagarpalikas', 
+            'localField': 'nagarpalikaId', 
+            'foreignField': '_id', 
+            'as': 'nagarpalikadata'
+          }
+        }, {
+          '$unwind': {
+            'path': '$nagarpalikadata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, 
+      ]);
       let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
       return handleResponse(res, dataObject, 200);
     } catch (e) {
