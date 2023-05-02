@@ -184,9 +184,43 @@ export const updateSingleQrhouse = async (req, res, next) => {
       { _id: mongoose.Types.ObjectId(req.body.qrId) },
       updateDeviceObject
     );
+    let qrhouseData = await QrHouses.aggregate([
+      {
+        '$match': {
+          '_id':mongoose.Types.ObjectId(req.body.qrId), 
+        }
+      }, {
+        '$lookup': {
+          'from': 'nagarpalikas', 
+          'localField': 'nagarpalikaId', 
+          'foreignField': '_id', 
+          'as': 'nagarpalikadata'
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'wards', 
+          'localField': 'wardId', 
+          'foreignField': '_id', 
+          'as': 'warddata'
+        }
+      }, 
+      {
+        '$unwind': {
+          'path': '$nagarpalikadata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, 
+      {
+        '$unwind': {
+          'path': '$warddata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+    ]);
     let dataObject = {
       message: "qrhouse details updated successfully.",
-      data: QrhouseData,
+      data: qrhouseData,
     };
     return handleResponse(res, dataObject);
   } catch (e) {
