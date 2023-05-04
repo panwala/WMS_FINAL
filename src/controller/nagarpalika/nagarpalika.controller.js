@@ -26,7 +26,16 @@ export const addNagarpalika = async (req, res, next) => {
 export const viewNagarpalika = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller viewNagarpalika()`);
-    const NagarpalikaData = await NagarPalikas.findData();
+    const NagarpalikaData = await NagarPalikas.aggregate([
+      {
+        '$lookup': {
+          'from': 'wards', 
+          'localField': '_id', 
+          'foreignField': 'nagarpalikaId', 
+          'as': 'wardData'
+        }
+      }
+    ]);
     let dataObject = {
       count: NagarpalikaData.length,
       message: "NagarPalikas fetched successfully.",
