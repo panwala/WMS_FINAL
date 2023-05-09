@@ -34,6 +34,12 @@ export const viewNagarpalika = async (req, res, next) => {
           'foreignField': 'nagarpalikaId', 
           'as': 'wardData'
         }
+      },
+      {
+      '$skip': req.query.skip ? req.query.skip : 0
+      },
+      {
+      '$limit': req.query.limit ? req.query.limit : 10
       }
     ]);
     let dataObject = {

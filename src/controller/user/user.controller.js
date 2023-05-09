@@ -1,4 +1,5 @@
 import Users from "../../models/user.model";
+import QrHouses from "../../models/qrhouse.model";
 import Roles from "../../models/role.model";
 // import Vehicles from "../../models/vechicle.model";
 // import Rolespermission from "../../models/roles_permission.model";
@@ -908,9 +909,20 @@ export const Registrationworkerlogin = async (req, res, next) => {
       const validateUserData = await decrypt(password, data[0].password);
       if (validateUserData) {
         data=data[0]
+        let registeredHouseCount= await QrHouses.aggregate([
+          {
+            '$match': {
+              'registrationmemberId': mongoose.Types.ObjectId(data._id)
+            }
+          }, {
+            '$count': 'totalhouseregistered'
+          }
+        ])
       console.log("userData", data);
+      console.log("registeredHouseCount",registeredHouseCount)
         let dataObject = {
           message: "User login successfully.",
+          count:registeredHouseCount,
           data
         };
         return handleResponse(res, dataObject);
@@ -1050,7 +1062,13 @@ export const getAllUserRoleWise = async (req, res, next) => {
         'path': '$warddata', 
         'preserveNullAndEmptyArrays': true
       }
-    }
+    },
+    {
+      '$skip': req.query.skip ? req.query.skip : 0
+      },
+      {
+      '$limit': req.query.limit ? req.query.limit : 10
+      }
       
     ]);
     let dataObject = {

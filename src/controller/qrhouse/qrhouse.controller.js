@@ -48,7 +48,12 @@ export const generateQrcodes = async (req, res, next) => {
     logger.log(level.info, `✔ Controller listdummyQrcodes()`);
     try {
        
-      let qrhouseData = await QrHouses.findData();
+      let qrhouseData = await QrHouses.aggregate([{
+        '$skip': req.query.skip ? req.query.skip : 0
+        },
+        {
+        '$limit': req.query.limit ? req.query.limit : 10
+        }]);
       let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
       return handleResponse(res, dataObject, 200);
     } catch (e) {
@@ -94,6 +99,12 @@ export const generateQrcodes = async (req, res, next) => {
             'preserveNullAndEmptyArrays': true
           }
         },
+        {
+          '$skip': req.query.skip ? req.query.skip : 0
+          },
+          {
+          '$limit': req.query.limit ? req.query.limit : 10
+          }
       ]);
       let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
       return handleResponse(res, dataObject, 200);
@@ -307,7 +318,13 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
             '$ne': null
           }
         }
-      }
+      },
+      {
+        '$skip': req.query.skip ? req.query.skip : 0
+        },
+        {
+        '$limit': req.query.limit ? req.query.limit : 10
+        }
     ]);
     let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
     return handleResponse(res, dataObject, 200);

@@ -26,7 +26,20 @@ export const addWard = async (req, res, next) => {
 export const viewWard = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller viewWard()`);
-    const WardData = await Wards.findData({nagarpalikaId:req.body.nagarpalikaId});
+    const WardData = await Wards.aggregate([
+        {
+          '$match': {
+            'nagarpalikaId':mongoose.Types.ObjectId(req.body.nagarpalikaId), 
+          }
+        },
+        {
+        '$skip': req.query.skip ? req.query.skip : 0
+        },
+        {
+        '$limit': req.query.limit ? req.query.limit : 10
+        }
+    ])
+    // findData({nagarpalikaId:req.body.nagarpalikaId});
     let dataObject = {
       count: WardData.length,
       message: "Wards fetched successfully.",
