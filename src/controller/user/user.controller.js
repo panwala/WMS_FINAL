@@ -1083,3 +1083,32 @@ export const getAllUserRoleWise = async (req, res, next) => {
     return next(new InternalServerError());
   }
 };
+
+export const fetchregisteredqrcodescountofregisrationworker = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr fetchregisteredqrcodescountofregisrationworker()`);
+    const { registrationmemberId } = req.body;
+    
+        let registeredHouseCount= await QrHouses.aggregate([
+          {
+            '$match': {
+              'registrationmemberId': mongoose.Types.ObjectId(registrationmemberId)
+            }
+          }, {
+            '$count': 'totalhouseregistered'
+          }
+        ])
+      // console.log("userData", data);
+      console.log("registeredHouseCount",registeredHouseCount)
+        let dataObject = {
+          message: "User login successfully.",
+          count:registeredHouseCount,
+          // data
+        };
+        return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};

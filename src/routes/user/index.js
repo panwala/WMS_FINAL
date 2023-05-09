@@ -13,9 +13,11 @@ const PATH = {
   REGISTRATION_WORKER_LOGIN: "/registrationworkerLogin",
   UPDATE_USER: "/updateuser/:userId",
   OPERATION_USER: "/useroperation/:userId",
+  FETCH_REGISTERED_QR_CODES_COUNT_OF_REGISTRATION_WORKER:"/fetchregisteredqrcodescountofregistrationworker"
 };
 // routes.route(PATH.ROOT).get(usersCtrl.getAllUser);
   routes.route(PATH.FETCH_USER_ROLE_WISE).post(usersCtrl.getAllUserRoleWise);
+  routes.route(PATH.FETCH_REGISTERED_QR_CODES_COUNT_OF_REGISTRATION_WORKER).post(usersCtrl.fetchregisteredqrcodescountofregisrationworker)
 // routes
 //   .route(PATH.FORGOT_PASSWORD)
 //   .post(
