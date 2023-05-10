@@ -1028,6 +1028,11 @@ export const getAllUserRoleWise = async (req, res, next) => {
       : {
           $nin: [],
         };
+        const qrhouseDatacount=await QrHouses.fetchCount({
+          'roleId': answer3,
+          'nagarpalikaId': answer1, 
+          'wardId': answer2
+      })
     const userData = await Users.aggregate([
       {
         $match: {
@@ -1085,7 +1090,7 @@ export const getAllUserRoleWise = async (req, res, next) => {
     let dataObject = {
       message: "Details fetched successfully.",
       data: userData,
-      count: userData.length,
+      count: qrhouseDatacount,
     };
     return handleResponse(res, dataObject);
   } catch (e) {

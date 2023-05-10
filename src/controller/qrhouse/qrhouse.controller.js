@@ -54,7 +54,12 @@ export const generateQrcodes = async (req, res, next) => {
         {
         '$limit': req.query.limit ? parseInt(req.query.limit) : 10
         }]);
-      let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
+        const qrhouseDatacount=await QrHouses.fetchCount()
+      let dataObject = { 
+        data:qrhouseData,
+        message: "Qr codes fetched  succesfully",
+        count:qrhouseDatacount
+       };
       return handleResponse(res, dataObject, 200);
     } catch (e) {
       if (e && e.message) return next(new BadRequestError(e.message));
@@ -65,7 +70,9 @@ export const generateQrcodes = async (req, res, next) => {
   export const listparticularnagarpalikaQrcodes = async (req, res, next) => {
     logger.log(level.info, `✔ Controller listparticularnagarpalikaQrcodes()`);
     try {
-       
+      const qrhouseDatacount=await QrHouses.fetchCount({
+        'nagarpalikaId':mongoose.Types.ObjectId(req.body.nagarpalikaId), 
+      })
       let qrhouseData = await QrHouses.aggregate([
         {
           '$match': {
@@ -106,7 +113,7 @@ export const generateQrcodes = async (req, res, next) => {
           '$limit': req.query.limit ? parseInt(req.query.limit) : 10
           }
       ]);
-      let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
+      let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" ,count:qrhouseDatacount };
       return handleResponse(res, dataObject, 200);
     } catch (e) {
       if (e && e.message) return next(new BadRequestError(e.message));
@@ -274,6 +281,10 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
       : {
           $nin: [],
         };
+        const qrhouseDatacount=await QrHouses.fetchCount({
+          'nagarpalikaId': answer1, 
+          'wardId': answer2
+        })
     let qrhouseData = await QrHouses.aggregate([
       {
         '$match': {
@@ -326,7 +337,7 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
         '$limit': req.query.limit ? parseInt(req.query.limit) : 10
         }
     ]);
-    let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
+    let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully",count:qrhouseDatacount };
     return handleResponse(res, dataObject, 200);
   } catch (e) {
     if (e && e.message) return next(new BadRequestError(e.message));

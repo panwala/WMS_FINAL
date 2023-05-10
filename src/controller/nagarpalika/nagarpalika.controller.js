@@ -42,8 +42,9 @@ export const viewNagarpalika = async (req, res, next) => {
       '$limit': req.query.limit ? parseInt(req.query.limit) : 10
       }
     ]);
+    const nagarpalikadatacount=await NagarPalikas.fetchCount()
     let dataObject = {
-      count: NagarpalikaData.length,
+      count: nagarpalikadatacount,
       message: "NagarPalikas fetched successfully.",
       data: NagarpalikaData,
     };
