@@ -33,11 +33,11 @@ export const viewWard = async (req, res, next) => {
           }
         },
         {
-        '$skip': req.query.skip ? req.query.skip : 0
-        },
-        {
-        '$limit': req.query.limit ? req.query.limit : 10
-        }
+          '$skip': req.query.skip ? parseInt(req.query.skip) : 0
+          },
+          {
+          '$limit': req.query.limit ? parseInt(req.query.limit) : 10
+          }
     ])
     // findData({nagarpalikaId:req.body.nagarpalikaId});
     let dataObject = {

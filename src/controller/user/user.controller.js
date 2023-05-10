@@ -885,8 +885,19 @@ export const Registrationworkerlogin = async (req, res, next) => {
               }
             },
             {
+              '$lookup': {
+                'from': 'qrhouses', 
+                'localField': '_id', 
+                'foreignField': 'registrationmemberId', 
+                'as': 'registeredqrhousedata'
+              }
+            },
+            {
               '$project': {
                 "_id":1,
+                'count': {
+                  '$size': '$registeredqrhousedata'
+                },
                 "name":1,
                 "adharno":1,
                 "drivinglicenseno":1,
@@ -918,11 +929,12 @@ export const Registrationworkerlogin = async (req, res, next) => {
             '$count': 'totalhouseregistered'
           }
         ])
+        // data.count=1
       console.log("userData", data);
       console.log("registeredHouseCount",registeredHouseCount)
         let dataObject = {
           message: "User login successfully.",
-          count:registeredHouseCount,
+          // count:registeredHouseCount,
           data
         };
         return handleResponse(res, dataObject);
@@ -1064,12 +1076,11 @@ export const getAllUserRoleWise = async (req, res, next) => {
       }
     },
     {
-      '$skip': req.query.skip ? req.query.skip : 0
+      '$skip': req.query.skip ? parseInt(req.query.skip) : 0
       },
       {
-      '$limit': req.query.limit ? req.query.limit : 10
+      '$limit': req.query.limit ? parseInt(req.query.limit) : 10
       }
-      
     ]);
     let dataObject = {
       message: "Details fetched successfully.",
@@ -1099,10 +1110,10 @@ export const fetchregisteredqrcodescountofregisrationworker = async (req, res, n
           }
         ])
       // console.log("userData", data);
-      console.log("registeredHouseCount",registeredHouseCount)
+      console.log("registeredHouseCount",registeredHouseCount[0].totalhouseregistered)
         let dataObject = {
-          message: "User login successfully.",
-          count:registeredHouseCount,
+          message: "Count fetched succesfully.",
+          count:registeredHouseCount[0].totalhouseregistered,
           // data
         };
         return handleResponse(res, dataObject);

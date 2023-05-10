@@ -49,10 +49,10 @@ export const generateQrcodes = async (req, res, next) => {
     try {
        
       let qrhouseData = await QrHouses.aggregate([{
-        '$skip': req.query.skip ? req.query.skip : 0
+        '$skip': req.query.skip ? parseInt(req.query.skip) : 0
         },
         {
-        '$limit': req.query.limit ? req.query.limit : 10
+        '$limit': req.query.limit ? parseInt(req.query.limit) : 10
         }]);
       let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
       return handleResponse(res, dataObject, 200);
@@ -100,10 +100,10 @@ export const generateQrcodes = async (req, res, next) => {
           }
         },
         {
-          '$skip': req.query.skip ? req.query.skip : 0
+          '$skip': req.query.skip ? parseInt(req.query.skip) : 0
           },
           {
-          '$limit': req.query.limit ? req.query.limit : 10
+          '$limit': req.query.limit ? parseInt(req.query.limit) : 10
           }
       ]);
       let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
@@ -320,10 +320,10 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
         }
       },
       {
-        '$skip': req.query.skip ? req.query.skip : 0
+        '$skip': req.query.skip ? parseInt(req.query.skip) : 0
         },
         {
-        '$limit': req.query.limit ? req.query.limit : 10
+        '$limit': req.query.limit ? parseInt(req.query.limit) : 10
         }
     ]);
     let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully" };
