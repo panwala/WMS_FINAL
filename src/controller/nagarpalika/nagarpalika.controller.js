@@ -27,18 +27,35 @@ export const viewNagarpalika = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller viewNagarpalika()`);
     var nagarpalikadatacount;
-    let answer1 = req.body.nagarpalikaname
-    ? req.body.nagarpalikaname
-    : {
-        $nin: [],
-      };
-    nagarpalikadatacount=await NagarPalikas.fetchCount({
-      'nagarpalikaname': answer1, 
-    })
+    if(req.body.search)
+    {
+      let demo=await NagarPalikas.aggregate([{
+        '$match': {
+          '$or': [
+            {
+              'nagarpalikaname': {
+                '$regex': req.body.search ?  req.body.search :""
+              }
+            }
+          ]
+        }
+      }])
+      nagarpalikadatacount=demo.length;
+    }
+    else
+    {
+      nagarpalikadatacount=await NagarPalikas.fetchCount()
+    }
     const NagarpalikaData = await NagarPalikas.aggregate([
       {
         $match: {
-          'nagarpalikaname': answer1, 
+          '$or': [
+            {
+              'nagarpalikaname': {
+                '$regex': req.body.search ?  req.body.search : ""
+              }
+            }
+          ]
         },
       },
       {

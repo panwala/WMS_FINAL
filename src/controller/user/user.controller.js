@@ -1083,15 +1083,15 @@ export const getAllUserRoleWise = async (req, res, next) => {
               '$or': [
                 {
                   'name': {
-                    '$regex': req.body.search
+                    '$regex':req.body.search ?  req.body.search :""
                   }
                 }, {
                   'nagarpalikadata.nagarpalikaname': {
-                    '$regex': req.body.search
+                    '$regex': req.body.search ?  req.body.search :""
                   }
                 }, {
                   'warddata.wardno': {
-                    '$regex': req.body.search
+                    '$regex': req.body.search ?  req.body.search :""
                   }
                 }
               ]
@@ -1159,15 +1159,15 @@ export const getAllUserRoleWise = async (req, res, next) => {
         '$or': [
           {
             'name': {
-              '$regex': req.body.search ?  req.body.search :{$nin: [],}
+              '$regex': req.body.search ?  req.body.search :""
             }
           }, {
             'nagarpalikadata.nagarpalikaname': {
-              '$regex': req.body.search ?  req.body.search :{$nin: [],}
+              '$regex': req.body.search ?  req.body.search :""
             }
           }, {
             'warddata.wardno': {
-              '$regex': req.body.search ?  req.body.search :{$nin: [],}
+              '$regex': req.body.search ?  req.body.search :""
             }
           }
         ]

@@ -282,7 +282,7 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
           $nin: [],
         };
        var qrhouseDatacount;
-        if(req.vody.search)
+        if(req.body.search)
         {
           let demo=await QrHouses.aggregate([
             {
@@ -334,15 +334,15 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
                 '$or': [
                   {
                     'username': {
-                      '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                      '$regex': req.body.search ?  req.body.search :""
                     }
                   }, {
                     'mobile_no': {
-                      '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                      '$regex': req.body.search ?  req.body.search :""
                     }
                   }, {
                     'nagarpalikadata.nagarpalikaname': {
-                      '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                      '$regex': req.body.search ?  req.body.search :""
                     }
                   }
                 ]
@@ -408,15 +408,15 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
           '$or': [
             {
               'username': {
-                '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                '$regex': req.body.search ?  req.body.search :""
               }
             }, {
               'mobile_no': {
-                '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                '$regex': req.body.search ?  req.body.search :""
               }
             }, {
               'nagarpalikadata.nagarpalikaname': {
-                '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                '$regex': req.body.search ?  req.body.search :""
               }
             }
           ]

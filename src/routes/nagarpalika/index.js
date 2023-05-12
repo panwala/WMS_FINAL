@@ -7,6 +7,7 @@ const routes = new Router();
 const PATH = {
   ROOT: "/",
   ROLEID: "/:roleId",
+  VIEW_ALL_NAGAR_PALIKA:"/viewallnagarpalika"
 };
 routes
   .route(PATH.ROOT)
@@ -17,7 +18,8 @@ routes
     // ],
     nagarpalikaCtrl.addNagarpalika
   )
-  .get(nagarpalikaCtrl.viewNagarpalika);
+  routes.route(PATH.VIEW_ALL_NAGAR_PALIKA)
+  .post(nagarpalikaCtrl.viewNagarpalika);
 // routes
 //   .route(PATH.ROLEID)
 //   .get(
