@@ -34,13 +34,14 @@ export const viewNagarpalika = async (req, res, next) => {
           '$or': [
             {
               'nagarpalikaname': {
-                '$regex': req.body.search ?  req.body.search :""
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
               }
             }
           ]
         }
       }])
-      nagarpalikadatacount=demo.length;
+      nagarpalikadatacount=demo.length == 0 ? 10 : demo.length;
     }
     else
     {
@@ -52,7 +53,8 @@ export const viewNagarpalika = async (req, res, next) => {
           '$or': [
             {
               'nagarpalikaname': {
-                '$regex': req.body.search ?  req.body.search : ""
+                '$regex': req.body.search ?  req.body.search : "",
+                '$options': 'i'
               }
             }
           ]

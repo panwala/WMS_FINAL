@@ -334,22 +334,25 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
                 '$or': [
                   {
                     'username': {
-                      '$regex': req.body.search ?  req.body.search :""
+                      '$regex': req.body.search ?  req.body.search :"",
+                      '$options': 'i'
                     }
                   }, {
                     'mobile_no': {
-                      '$regex': req.body.search ?  req.body.search :""
+                      '$regex': req.body.search ?  req.body.search :"",
+                      '$options': 'i'
                     }
                   }, {
                     'nagarpalikadata.nagarpalikaname': {
-                      '$regex': req.body.search ?  req.body.search :""
+                      '$regex': req.body.search ?  req.body.search :"",
+                      '$options': 'i'
                     }
                   }
                 ]
               }
             },
           ]);
-          qrhouseDatacount=demo.length;
+          qrhouseDatacount=demo.length == 0 ? 10 : demo.length;
         }
         else
         {
@@ -408,15 +411,18 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
           '$or': [
             {
               'username': {
-                '$regex': req.body.search ?  req.body.search :""
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
               }
             }, {
               'mobile_no': {
-                '$regex': req.body.search ?  req.body.search :""
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
               }
             }, {
               'nagarpalikadata.nagarpalikaname': {
-                '$regex': req.body.search ?  req.body.search :""
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
               }
             }
           ]

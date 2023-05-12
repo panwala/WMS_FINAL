@@ -1083,21 +1083,24 @@ export const getAllUserRoleWise = async (req, res, next) => {
               '$or': [
                 {
                   'name': {
-                    '$regex':req.body.search ?  req.body.search :""
+                    '$regex':req.body.search ?  req.body.search :"",
+                    '$options': 'i'
                   }
                 }, {
                   'nagarpalikadata.nagarpalikaname': {
-                    '$regex': req.body.search ?  req.body.search :""
+                    '$regex': req.body.search ?  req.body.search :"",
+                    '$options': 'i'
                   }
                 }, {
                   'warddata.wardno': {
-                    '$regex': req.body.search ?  req.body.search :""
+                    '$regex': req.body.search ?  req.body.search :"",
+                    '$options': 'i'
                   }
                 }
               ]
             }
           }])
-          qrhouseDatacount=demo.length
+          qrhouseDatacount=demo.length == 0 ? 10 : demo.length
         }
         else
         {
@@ -1159,15 +1162,18 @@ export const getAllUserRoleWise = async (req, res, next) => {
         '$or': [
           {
             'name': {
-              '$regex': req.body.search ?  req.body.search :""
+              '$regex': req.body.search ?  req.body.search :"",
+              '$options': 'i'
             }
           }, {
             'nagarpalikadata.nagarpalikaname': {
-              '$regex': req.body.search ?  req.body.search :""
+              '$regex': req.body.search ?  req.body.search :"",
+              '$options': 'i'
             }
           }, {
             'warddata.wardno': {
-              '$regex': req.body.search ?  req.body.search :""
+              '$regex': req.body.search ?  req.body.search :"",
+              '$options': 'i'
             }
           }
         ]
