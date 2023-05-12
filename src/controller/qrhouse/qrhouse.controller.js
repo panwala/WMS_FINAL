@@ -281,10 +281,83 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
       : {
           $nin: [],
         };
-        const qrhouseDatacount=await QrHouses.fetchCount({
-          'nagarpalikaId': answer1, 
-          'wardId': answer2
-        })
+       var qrhouseDatacount;
+        if(req.vody.search)
+        {
+          let demo=await QrHouses.aggregate([
+            {
+              '$match': {
+                'nagarpalikaId': answer1, 
+                'wardId': answer2
+              }
+            }, {
+              '$lookup': {
+                'from': 'nagarpalikas', 
+                'localField': 'nagarpalikaId', 
+                'foreignField': '_id', 
+                'as': 'nagarpalikadata'
+              }
+            }, {
+              '$lookup': {
+                'from': 'wards', 
+                'localField': 'wardId', 
+                'foreignField': '_id', 
+                'as': 'warddata'
+              }
+            }, {
+              '$unwind': {
+                'path': '$nagarpalikadata', 
+                'preserveNullAndEmptyArrays': true
+              }
+            }, {
+              '$unwind': {
+                'path': '$warddata', 
+                'preserveNullAndEmptyArrays': true
+              }
+            }, {
+              '$addFields': {
+                'warddataexist': {
+                  '$ifNull': [
+                    '$warddata', null
+                  ]
+                }
+              }
+            }, {
+              '$match': {
+                'warddataexist': {
+                  '$ne': null
+                }
+              }
+            },
+            {
+              '$match': {
+                '$or': [
+                  {
+                    'username': {
+                      '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                    }
+                  }, {
+                    'mobile_no': {
+                      '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                    }
+                  }, {
+                    'nagarpalikadata.nagarpalikaname': {
+                      '$regex': req.body.search ?  req.body.search :{$nin: [],}
+                    }
+                  }
+                ]
+              }
+            },
+          ]);
+          qrhouseDatacount=demo.length;
+        }
+        else
+        {
+           qrhouseDatacount=await QrHouses.fetchCount({
+            'nagarpalikaId': answer1, 
+            'wardId': answer2
+          })
+        }
     let qrhouseData = await QrHouses.aggregate([
       {
         '$match': {
@@ -328,6 +401,25 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
           'warddataexist': {
             '$ne': null
           }
+        }
+      },
+      {
+        '$match': {
+          '$or': [
+            {
+              'username': {
+                '$regex': req.body.search ?  req.body.search :{$nin: [],}
+              }
+            }, {
+              'mobile_no': {
+                '$regex': req.body.search ?  req.body.search :{$nin: [],}
+              }
+            }, {
+              'nagarpalikadata.nagarpalikaname': {
+                '$regex': req.body.search ?  req.body.search :{$nin: [],}
+              }
+            }
+          ]
         }
       },
       {

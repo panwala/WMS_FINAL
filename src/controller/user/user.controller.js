@@ -1013,6 +1013,7 @@ export const Adminlogin = async (req, res, next) => {
 export const getAllUserRoleWise = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller getAllUserRoleWise()`);
+    var qrhouseDatacount;
     let answer1 = req.body.nagarpalikaId
     ? mongoose.Types.ObjectId(req.body.nagarpalikaId)
     : {
@@ -1028,11 +1029,84 @@ export const getAllUserRoleWise = async (req, res, next) => {
       : {
           $nin: [],
         };
-        const qrhouseDatacount=await QrHouses.fetchCount({
-          'roleId': answer3,
-          'nagarpalikaId': answer1, 
-          'wardId': answer2
-      })
+        if(req.body.search)
+        {
+          let demo=await QrHouses.aggregate([
+            {
+              $match: {
+                  'roleId': answer3,
+                  'nagarpalikaId': answer1, 
+                  'wardId': answer2
+              },
+            },
+            {
+              $lookup: {
+                from: "roles",
+                localField: "roleId",
+                foreignField: "_id",
+                as: "demo",
+              },
+            },
+            {
+              $unwind: {
+                path: "$demo",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+            '$lookup': {
+              'from': 'nagarpalikas', 
+              'localField': 'nagarpalikaId', 
+              'foreignField': '_id', 
+              'as': 'nagarpalikadata'
+            }
+          }, {
+            '$lookup': {
+              'from': 'wards', 
+              'localField': 'wardId', 
+              'foreignField': '_id', 
+              'as': 'warddata'
+            }
+          }, {
+            '$unwind': {
+              'path': '$nagarpalikadata', 
+              'preserveNullAndEmptyArrays': true
+            }
+          }, {
+            '$unwind': {
+              'path': '$warddata', 
+              'preserveNullAndEmptyArrays': true
+            }
+          },
+          {
+            '$match': {
+              '$or': [
+                {
+                  'name': {
+                    '$regex': req.body.search
+                  }
+                }, {
+                  'nagarpalikadata.nagarpalikaname': {
+                    '$regex': req.body.search
+                  }
+                }, {
+                  'warddata.wardno': {
+                    '$regex': req.body.search
+                  }
+                }
+              ]
+            }
+          }])
+          qrhouseDatacount=demo.length
+        }
+        else
+        {
+             qrhouseDatacount=await QrHouses.fetchCount({
+              'roleId': answer3,
+              'nagarpalikaId': answer1, 
+              'wardId': answer2
+          })
+        }
     const userData = await Users.aggregate([
       {
         $match: {
@@ -1078,6 +1152,25 @@ export const getAllUserRoleWise = async (req, res, next) => {
       '$unwind': {
         'path': '$warddata', 
         'preserveNullAndEmptyArrays': true
+      }
+    },
+    {
+      '$match': {
+        '$or': [
+          {
+            'name': {
+              '$regex': req.body.search ?  req.body.search :{$nin: [],}
+            }
+          }, {
+            'nagarpalikadata.nagarpalikaname': {
+              '$regex': req.body.search ?  req.body.search :{$nin: [],}
+            }
+          }, {
+            'warddata.wardno': {
+              '$regex': req.body.search ?  req.body.search :{$nin: [],}
+            }
+          }
+        ]
       }
     },
     {

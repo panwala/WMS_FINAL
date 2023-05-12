@@ -26,8 +26,21 @@ export const addNagarpalika = async (req, res, next) => {
 export const viewNagarpalika = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller viewNagarpalika()`);
-    const nagarpalikadatacount=await NagarPalikas.fetchCount()
+    var nagarpalikadatacount;
+    let answer1 = req.body.nagarpalikaname
+    ? req.body.nagarpalikaname
+    : {
+        $nin: [],
+      };
+    nagarpalikadatacount=await NagarPalikas.fetchCount({
+      'nagarpalikaname': answer1, 
+    })
     const NagarpalikaData = await NagarPalikas.aggregate([
+      {
+        $match: {
+          'nagarpalikaname': answer1, 
+        },
+      },
       {
         '$lookup': {
           'from': 'wards', 
