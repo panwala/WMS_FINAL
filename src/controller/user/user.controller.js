@@ -1084,7 +1084,7 @@ export const getAllUserRoleWise = async (req, res, next) => {
       '$skip': req.query.skip ? parseInt(req.query.skip) : 0
       },
       {
-      '$limit': req.query.limit ? parseInt(req.query.limit) : 10
+      '$limit': req.query.limit ? parseInt(req.query.limit) : qrhouseDatacount
       }
     ]);
     let dataObject = {

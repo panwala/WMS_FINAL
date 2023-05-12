@@ -12,6 +12,7 @@ const PATH = {
   LIST_QR_CODES:"/listqrcodes",
   LIST_QR_CODES_BY_NAGARPALIKA:"/listqrcodebynagarpalika",
   LIST_ONLY_REGISTERED_QR_CODES:"/listonlyregisteredqrcodes",
+  LIST_ONLY_REGISTERED_QR_CODES_BY_REGISTRATION_WORKER:"/listonlyregisteredqrcodesbyregistrationworker",
   DELETE_MULTIPLE_QR_CODES:"/deletemultipleqrcodes"
 //   ROLEID: "/:roleId",
 };
@@ -29,6 +30,7 @@ routes
   routes.route(PATH.CHECK_QR_REGISTERED_OR_NOT).post(qrhouse.checkqrhouseregisteredornot)
   routes.route(PATH.UPDATE_QR_HOUSE_DETAILS).post(qrhouse.updateSingleQrhouse)
   routes.route(PATH.LIST_QR_CODES).get(qrhouse.listdummyQrcodes)
+  routes.route(PATH.LIST_ONLY_REGISTERED_QR_CODES_BY_REGISTRATION_WORKER).post(qrhouse.listonlyregisteredQrcodesbyparticularregistrationworker)
 
   routes.route(PATH.LIST_ONLY_REGISTERED_QR_CODES).post(qrhouse.listonlyregisteredQrcodes)
   routes.route(PATH.DELETE_MULTIPLE_QR_CODES).delete(qrhouse.removemultipleqrcodes)

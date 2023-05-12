@@ -26,6 +26,7 @@ export const addNagarpalika = async (req, res, next) => {
 export const viewNagarpalika = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller viewNagarpalika()`);
+    const nagarpalikadatacount=await NagarPalikas.fetchCount()
     const NagarpalikaData = await NagarPalikas.aggregate([
       {
         '$lookup': {
@@ -39,10 +40,9 @@ export const viewNagarpalika = async (req, res, next) => {
       '$skip': req.query.skip ? parseInt(req.query.skip) : 0
       },
       {
-      '$limit': req.query.limit ? parseInt(req.query.limit) : 10
+      '$limit': req.query.limit ? parseInt(req.query.limit) : nagarpalikadatacount
       }
     ]);
-    const nagarpalikadatacount=await NagarPalikas.fetchCount()
     let dataObject = {
       count: nagarpalikadatacount,
       message: "NagarPalikas fetched successfully.",

@@ -39,7 +39,7 @@ export const viewWard = async (req, res, next) => {
           '$skip': req.query.skip ? parseInt(req.query.skip) : 0
           },
           {
-          '$limit': req.query.limit ? parseInt(req.query.limit) : 10
+          '$limit': req.query.limit ? parseInt(req.query.limit) : qrhouseDatacount
           }
     ])
     // findData({nagarpalikaId:req.body.nagarpalikaId});
