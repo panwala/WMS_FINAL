@@ -1079,27 +1079,33 @@ export const getAllUserRoleWise = async (req, res, next) => {
             }
           },
           {
-            '$match': {
-              '$or': [
-                {
-                  'name': {
-                    '$regex':req.body.search ?  req.body.search :"",
-                    '$options': 'i'
-                  }
-                }, {
-                  'nagarpalikadata.nagarpalikaname': {
-                    '$regex': req.body.search ?  req.body.search :"",
-                    '$options': 'i'
-                  }
-                }, {
-                  'warddata.wardno': {
-                    '$regex': req.body.search ?  req.body.search :"",
-                    '$options': 'i'
-                  }
-                }
-              ]
+      '$match': {
+        '$or': [
+          {
+            'name':req.body.search ?  {
+              '$regex': req.body.search ?  req.body.search :"",
+              '$options': 'i'
+            } :{
+              '$nin': []
             }
-          }])
+          }, {
+            'nagarpalikadata.nagarpalikaname': req.body.search ? {
+              '$regex': req.body.search ?  req.body.search :"",
+              '$options': 'i'
+            }:{
+              '$nin': []
+            }
+          }, {
+            'warddata.wardno':req.body.search ? {
+              '$regex': req.body.search ?  req.body.search :"",
+              '$options': 'i'
+            }:{
+              '$nin': []
+            }
+          }
+        ]
+      }
+    }])
           console.log("demo.length",demo.length)
           userDatacount=demo.length == 0 ? 10 : demo.length
           console.log("userDatacount",userDatacount)
@@ -1165,19 +1171,25 @@ export const getAllUserRoleWise = async (req, res, next) => {
       '$match': {
         '$or': [
           {
-            'name': {
+            'name':req.body.search ?  {
               '$regex': req.body.search ?  req.body.search :"",
               '$options': 'i'
+            } :{
+              '$nin': []
             }
           }, {
-            'nagarpalikadata.nagarpalikaname': {
+            'nagarpalikadata.nagarpalikaname': req.body.search ? {
               '$regex': req.body.search ?  req.body.search :"",
               '$options': 'i'
+            }:{
+              '$nin': []
             }
           }, {
-            'warddata.wardno': {
+            'warddata.wardno':req.body.search ? {
               '$regex': req.body.search ?  req.body.search :"",
               '$options': 'i'
+            }:{
+              '$nin': []
             }
           }
         ]

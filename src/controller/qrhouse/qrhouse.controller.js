@@ -333,19 +333,25 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
               '$match': {
                 '$or': [
                   {
-                    'username': {
+                    'username':req.body.search ? {
                       '$regex': req.body.search ?  req.body.search :"",
                       '$options': 'i'
+                    }:{
+                      '$nin': []
                     }
                   }, {
-                    'mobile_no': {
+                    'mobile_no': req.body.search ? {
                       '$regex': req.body.search ?  req.body.search :"",
                       '$options': 'i'
+                    }:{
+                      '$nin': []
                     }
                   }, {
-                    'nagarpalikadata.nagarpalikaname': {
+                    'nagarpalikadata.nagarpalikaname': req.body.search ? {
                       '$regex': req.body.search ?  req.body.search :"",
                       '$options': 'i'
+                    }:{
+                      '$nin': []
                     }
                   }
                 ]
@@ -411,19 +417,25 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
         '$match': {
           '$or': [
             {
-              'username': {
+              'username': req.body.search ? {
                 '$regex': req.body.search ?  req.body.search :"",
                 '$options': 'i'
+              }:{
+                '$nin': []
               }
             }, {
-              'mobile_no': {
+              'mobile_no': req.body.search ?{
                 '$regex': req.body.search ?  req.body.search :"",
                 '$options': 'i'
+              }:{
+                '$nin': []
               }
             }, {
-              'nagarpalikadata.nagarpalikaname': {
+              'nagarpalikadata.nagarpalikaname':req.body.search ? {
                 '$regex': req.body.search ?  req.body.search :"",
                 '$options': 'i'
+              }:{
+                '$nin': []
               }
             }
           ]

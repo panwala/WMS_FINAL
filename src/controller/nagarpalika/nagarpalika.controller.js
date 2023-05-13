@@ -33,9 +33,11 @@ export const viewNagarpalika = async (req, res, next) => {
         '$match': {
           '$or': [
             {
-              'nagarpalikaname': {
+              'nagarpalikaname':req.body.search ? {
                 '$regex': req.body.search ?  req.body.search :"",
                 '$options': 'i'
+              }:{
+                '$nin': []
               }
             }
           ]
@@ -53,9 +55,11 @@ export const viewNagarpalika = async (req, res, next) => {
         $match: {
           '$or': [
             {
-              'nagarpalikaname': {
+              'nagarpalikaname':req.body.search ? {
                 '$regex': req.body.search ?  req.body.search : "",
                 '$options': 'i'
+              }:{
+                '$nin': []
               }
             }
           ]
