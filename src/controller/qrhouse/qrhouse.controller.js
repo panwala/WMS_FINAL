@@ -360,6 +360,7 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
             'nagarpalikaId': answer1, 
             'wardId': answer2
           })
+          qrhouseDatacount=qrhouseDatacount == 0 ? 10 : qrhouseDatacount
         }
     let qrhouseData = await QrHouses.aggregate([
       {

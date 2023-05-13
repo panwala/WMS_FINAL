@@ -1013,7 +1013,7 @@ export const Adminlogin = async (req, res, next) => {
 export const getAllUserRoleWise = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller getAllUserRoleWise()`);
-    var qrhouseDatacount;
+    var userDatacount;
     let answer1 = req.body.nagarpalikaId
     ? mongoose.Types.ObjectId(req.body.nagarpalikaId)
     : {
@@ -1031,7 +1031,7 @@ export const getAllUserRoleWise = async (req, res, next) => {
         };
         if(req.body.search)
         {
-          let demo=await QrHouses.aggregate([
+          let demo=await Users.aggregate([
             {
               $match: {
                   'roleId': answer3,
@@ -1100,16 +1100,20 @@ export const getAllUserRoleWise = async (req, res, next) => {
               ]
             }
           }])
-          qrhouseDatacount=demo.length == 0 ? 10 : demo.length
+          console.log("demo.length",demo.length)
+          userDatacount=demo.length == 0 ? 10 : demo.length
+          console.log("userDatacount",userDatacount)
         }
         else
         {
-             qrhouseDatacount=await QrHouses.fetchCount({
+             userDatacount=await Users.fetchCount({
               'roleId': answer3,
               'nagarpalikaId': answer1, 
               'wardId': answer2
           })
+          userDatacount=userDatacount == 0 ? 10 : userDatacount
         }
+        console.log("userDatacount",userDatacount)
     const userData = await Users.aggregate([
       {
         $match: {
@@ -1183,13 +1187,13 @@ export const getAllUserRoleWise = async (req, res, next) => {
       '$skip': req.query.skip ? parseInt(req.query.skip) : 0
       },
       {
-      '$limit': req.query.limit ? parseInt(req.query.limit) : qrhouseDatacount
+      '$limit': req.query.limit ? parseInt(req.query.limit) : userDatacount
       }
     ]);
     let dataObject = {
       message: "Details fetched successfully.",
       data: userData,
-      count: qrhouseDatacount,
+      count: userDatacount,
     };
     return handleResponse(res, dataObject);
   } catch (e) {

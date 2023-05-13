@@ -46,6 +46,7 @@ export const viewNagarpalika = async (req, res, next) => {
     else
     {
       nagarpalikadatacount=await NagarPalikas.fetchCount()
+      nagarpalikadatacount=nagarpalikadatacount == 0 ? 10 : nagarpalikadatacount
     }
     const NagarpalikaData = await NagarPalikas.aggregate([
       {
