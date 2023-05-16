@@ -5,6 +5,7 @@ import UserRoutes from "./user";
 import WardRoutes from "./ward";
 import NagarpalikaRoutes from "./nagarpalika";
 import QrRoutes from "./qrhouse";
+import propertytypeRoutes from "./propertyType";
 import {AuthMiddleware} from "../middleware/authMiddleware"
 
 const routes = new Router();
@@ -14,7 +15,8 @@ const PATH = {
   ROLES: "/roles",
   WARDS:"/wards",
   NAGARPALIKA:"/nagarpalika",
-  QR:"/qrs"
+  QR:"/qrs",
+  PROPERTYTYPE:"/propertytpe"
 };
 
 routes.get("/healthCheck", AuthMiddleware,(req, res) => {
@@ -29,4 +31,5 @@ routes.use(PATH.ROLES, RoleRoutes);
 routes.use(PATH.WARDS, WardRoutes);
 routes.use(PATH.NAGARPALIKA, NagarpalikaRoutes);
 routes.use(PATH.QR, QrRoutes);
+routes.use(PATH.PROPERTYTYPE, propertytypeRoutes);
 export default routes;

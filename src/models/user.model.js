@@ -28,7 +28,8 @@ const schema = {
   is_registered:{
     type:Boolean,
     default:false
-  }
+  },
+  designation:String
 };
 
 let schemaOption = {

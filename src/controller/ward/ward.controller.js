@@ -13,7 +13,18 @@ import { logger, level } from "../../config/logger/logger";
 export const addWard = async (req, res, next) => {
   logger.log(level.info, `✔ Controller addWard()`);
   try {
-    let wardsData = await Wards.createData(req.body);
+    const {wardno,nagarpalikaId}=req.body
+    var wardCountdata=await Wards.findData({nagarpalikaId:mongoose.Types.ObjectId(nagarpalikaId)})
+    console.log("length",wardCountdata.length)
+    // if(wardCountdata.length == 0)
+    // {
+      wardCountdata.length++;
+    // }
+    for(let i=0;i<parseInt(wardno);i++)
+    {  
+      let wardsData = await Wards.createData({wardno:wardCountdata.length,nagarpalikaId})
+      wardCountdata.length++;
+    }
     let dataObject = { message: "Wards created succesfully" };
     return handleResponse(res, dataObject, 201);
   } catch (e) {

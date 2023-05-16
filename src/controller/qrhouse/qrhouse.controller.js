@@ -201,7 +201,9 @@ export const updateSingleQrhouse = async (req, res, next) => {
         wardId,
         registrationmemberId,
         propertyType,
-        date:new Date(moment().tz("Asia/calcutta").format())
+        date: new Date().toLocaleString("en-US", {
+          timeZone: "Asia/calcutta",
+        })
     };
     let QrhouseData = await QrHouses.updateData(
       { _id: mongoose.Types.ObjectId(req.body.qrId) },

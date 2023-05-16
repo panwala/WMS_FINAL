@@ -938,7 +938,6 @@ export const Registrationworkerlogin = async (req, res, next) => {
         var dates223 = new Date(
           moment().tz("Asia/calcutta").format("YYYY-MM-DD")
         );
-       
         let todayregisteredHouseCount= await QrHouses.aggregate([
           {
             '$match': {
@@ -950,6 +949,7 @@ export const Registrationworkerlogin = async (req, res, next) => {
             }
           }
         ])
+        data["registeredqrhousetoday"]=todayregisteredHouseCount.length
         console.log("dates223", new Date(new Date(dates223)));
         console.log("dates223", new Date (new Date(dates223).setHours(23, 59, 59)));
         console.log("todayregisteredHouseCount",todayregisteredHouseCount)
