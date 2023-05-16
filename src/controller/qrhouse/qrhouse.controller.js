@@ -2,6 +2,7 @@ import QrHouses from "../../models/qrhouse.model";
 // import Tabs from "../../models/tabs.model";
 // import NagarPalikaspermission from "../../models/NagarPalikas_permission.model";
 import { handleResponse } from "../../helpers/utility";
+import moment from "moment";
 const mongoose = require("mongoose");
 import {
   BadRequestError,
@@ -32,7 +33,10 @@ export const generateQrcodes = async (req, res, next) => {
              nagarpalikaData = await QrHouses.createData(
               {
                 housetype:req.body.housetype,
-                nagarpalikaId:req.body.nagarpalikaId
+                nagarpalikaId:req.body.nagarpalikaId,
+                date: new Date().toLocaleString("en-US", {
+                  timeZone: "Asia/calcutta",
+                })
               });
               finalArray.push(nagarpalikaData)
         }
@@ -196,7 +200,8 @@ export const updateSingleQrhouse = async (req, res, next) => {
         nagarpalikaId,
         wardId,
         registrationmemberId,
-        propertyType
+        propertyType,
+        date:new Date(moment().tz("Asia/calcutta").format())
     };
     let QrhouseData = await QrHouses.updateData(
       { _id: mongoose.Types.ObjectId(req.body.qrId) },

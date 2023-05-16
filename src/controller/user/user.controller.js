@@ -1,6 +1,7 @@
 import Users from "../../models/user.model";
 import QrHouses from "../../models/qrhouse.model";
 import Roles from "../../models/role.model";
+import moment from "moment-timezone";
 // import Vehicles from "../../models/vechicle.model";
 // import Rolespermission from "../../models/roles_permission.model";
 // const client = require("twilio")(
@@ -684,6 +685,7 @@ export const updateSingleUser = async (req, res, next) => {
       nagarpalikaId,
       wardId,
       roleId,
+      is_registered
     } = req.body;
     let updateDeviceObject = {
       name,
@@ -698,6 +700,7 @@ export const updateSingleUser = async (req, res, next) => {
       nagarpalikaId,
       wardId,
       roleId,
+      is_registered
     };
     if (password) {
       password = await encrypt(password);
@@ -926,12 +929,45 @@ export const Registrationworkerlogin = async (req, res, next) => {
               'registrationmemberId': mongoose.Types.ObjectId(data._id)
             }
           }, {
-            '$count': 'totalhouseregistered'
+            $group: {
+              _id: { housetype: "$housetype" },
+              Devicecount: { $sum: 1 },
+            },
+          },
+        ])
+        var dates223 = new Date(
+          moment().tz("Asia/calcutta").format("YYYY-MM-DD")
+        );
+       
+        let todayregisteredHouseCount= await QrHouses.aggregate([
+          {
+            '$match': {
+              'registrationmemberId': mongoose.Types.ObjectId(data._id),
+              'updatedAt': {
+                $gte:  new Date (dates223),
+                $lte: new Date (new Date(dates223).setHours(23, 59, 59)),
+              },
+            }
           }
         ])
-        // data.count=1
-      console.log("userData", data);
-      console.log("registeredHouseCount",registeredHouseCount)
+        console.log("dates223", new Date(new Date(dates223)));
+        console.log("dates223", new Date (new Date(dates223).setHours(23, 59, 59)));
+        console.log("todayregisteredHouseCount",todayregisteredHouseCount)
+        for(let i=0;i<registeredHouseCount.length;i++)
+        {
+              if(registeredHouseCount[i]["_id"]["housetype"] == "0")
+              {
+                data["residentialqrcodescount"]=registeredHouseCount[i]["Devicecount"]
+              }
+              else if(registeredHouseCount[i]["_id"]["housetype"] == "1")
+              {
+                data["commercialqrcodescount"]=registeredHouseCount[i]["Devicecount"]
+              }
+        }
+          // data.count=1
+          // console.log("userData", data);
+          // console.log("hi",registeredHouseCount[0]["_id"])
+      // console.log("registeredHouseCount",registeredHouseCount)
         let dataObject = {
           message: "User login successfully.",
           // count:registeredHouseCount,

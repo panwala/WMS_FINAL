@@ -25,6 +25,10 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Roles",
   },
+  is_registered:{
+    type:Boolean,
+    default:false
+  }
 };
 
 let schemaOption = {

@@ -33,7 +33,10 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
   },
-
+  date:
+  {
+    type:Date
+  }
 };
 
 let schemaOption = {
