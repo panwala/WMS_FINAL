@@ -29,7 +29,7 @@ const schema = {
     type:Boolean,
     default:false
   },
-  designation:String
+  designation:String //0:driver ,1:co-worker
 };
 
 let schemaOption = {

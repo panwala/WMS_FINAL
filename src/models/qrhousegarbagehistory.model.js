@@ -4,26 +4,12 @@ import SchemaModel from "../config/database/mongoDBOperation";
 
 const schema = {
   // qrhouseid:String,
-  housetype: {
-    type: String,//0:Residential,1:Commercial
-    trim: true,
-  },
-  propertyType:{
-    type:String
-  },
-  houseno:String,
-  houseaddress:String,
-  city:String,
-  zipcode:String,
+
   is_wastecollected:{
     type:String,  
     default:"0"     //0:Not Collected 1:Collected
   },
   reason:String,
-  username:String,
-  mobile_no:String,
-  lat:String,
-  long:String,
   nagarpalikaId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "NagarPalikas",
@@ -40,6 +26,10 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
   },
+  houseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "QrHouses",
+  },
   date:
   {
     type:Date
@@ -51,10 +41,10 @@ let schemaOption = {
   versionKey: false,
 };
 
-let modelName = "QrHouses";
-let qrhousesSchema = Schema(schema, schemaOption);
+let modelName = "QrHousesgarbagehistory";
+let qrhousesgarbagehistorySchema = Schema(schema, schemaOption);
 
-let qrhousesModel = model(modelName, qrhousesSchema);
-let QrHouses = new SchemaModel(qrhousesModel);
+let qrhousesgarbagehistoryModel = model(modelName, qrhousesgarbagehistorySchema);
+let QrHousesgarbagehistory = new SchemaModel(qrhousesgarbagehistoryModel);
 
-export default QrHouses;
+export default QrHousesgarbagehistory;

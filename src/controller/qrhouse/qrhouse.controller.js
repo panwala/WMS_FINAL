@@ -1,4 +1,5 @@
 import QrHouses from "../../models/qrhouse.model";
+import QrHousesgarbagehistory from "../../models/qrhousegarbagehistory.model";
 // import Tabs from "../../models/tabs.model";
 // import NagarPalikaspermission from "../../models/NagarPalikas_permission.model";
 import { handleResponse } from "../../helpers/utility";
@@ -174,7 +175,7 @@ export const updateSingleQrhouse = async (req, res, next) => {
         houseaddress,
         city,
         zipcode,
-        wastecollectionvalue,
+        is_wastecollected,
         reason,
         username,
         propertyType,
@@ -183,7 +184,8 @@ export const updateSingleQrhouse = async (req, res, next) => {
         long,
         nagarpalikaId,
         wardId,
-        registrationmemberId
+        registrationmemberId,
+        sanitrationmemberId
      } = req.body;
     let updateDeviceObject = {
         housetype,
@@ -191,7 +193,7 @@ export const updateSingleQrhouse = async (req, res, next) => {
         houseaddress,
         city,
         zipcode,
-        wastecollectionvalue,
+        is_wastecollected,
         reason,
         username,
         mobile_no,
@@ -203,12 +205,65 @@ export const updateSingleQrhouse = async (req, res, next) => {
         propertyType,
         date: new Date().toLocaleString("en-US", {
           timeZone: "Asia/calcutta",
-        })
+        }),
+        sanitrationmemberId
     };
+    
     let QrhouseData = await QrHouses.updateData(
       { _id: mongoose.Types.ObjectId(req.body.qrId) },
       updateDeviceObject
     );
+    if(is_wastecollected)
+    {
+      console.log("inside")
+      // console.log("QrhouseData",QrhouseData)
+      var dates223 = new Date(
+        moment().tz("Asia/calcutta").format("YYYY-MM-DD")
+      );
+      let istodayrecordexist= await QrHousesgarbagehistory.aggregate([
+        {
+          '$match': {
+            'sanitrationmemberId': mongoose.Types.ObjectId(sanitrationmemberId),
+            'date': {
+              $gte:  new Date (dates223),
+              $lte: new Date (new Date(dates223).setHours(23, 59, 59)),
+            },
+          }
+        }
+      ])
+      if(istodayrecordexist.length >0)
+      {
+        await QrHousesgarbagehistory.updateData({ _id: mongoose.Types.ObjectId(istodayrecordexist[0]._id) },
+        {
+          is_wastecollected,
+          reason,
+          nagarpalikaId:QrhouseData.nagarpalikaId,
+          wardId:QrhouseData.wardId,
+          registrationmemberId:QrhouseData.registrationmemberId,
+          sanitrationmemberId:sanitrationmemberId,
+          houseId:QrhouseData._id,
+          date: new Date().toLocaleString("en-US", {
+            timeZone: "Asia/calcutta",
+          })
+        })
+      }
+      else
+      {
+        await QrHousesgarbagehistory.createData({
+          is_wastecollected,
+          reason,
+          nagarpalikaId:QrhouseData.nagarpalikaId,
+          wardId:QrhouseData.wardId,
+          registrationmemberId:QrhouseData.registrationmemberId,
+          sanitrationmemberId:sanitrationmemberId,
+          houseId:QrhouseData._id,
+          date: new Date().toLocaleString("en-US", {
+            timeZone: "Asia/calcutta",
+          })
+        })
+      }
+      console.log("istodayrecordexist",istodayrecordexist)
+    }
     let qrhouseData = await QrHouses.aggregate([
       {
         '$match': {
@@ -483,6 +538,7 @@ export const removemultipleqrcodes = async (req, res, next) => {
 };
 
 
+
 export const listonlyregisteredQrcodesbyparticularregistrationworker = async (req, res, next) => {
   logger.log(level.info, `✔ Controller listonlyregisteredQrcodesbyparticularregistrationworker()`);
   try {
@@ -561,6 +617,61 @@ export const listonlyregisteredQrcodesbyparticularregistrationworker = async (re
         }
     ]);
     let dataObject = { data:qrhouseData,message: "Qr codes fetched  succesfully",count:qrhouseDatacount };
+    return handleResponse(res, dataObject, 200);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+export const fetchdashboardcountforsanitaryworker = async (req, res, next) => {
+  logger.log(level.info, `✔ Controller fetchdashboardcountforsanitaryworker()`);
+  try {
+    let answer1 = req.body.nagarpalikaId
+    ? mongoose.Types.ObjectId(req.body.nagarpalikaId)
+    : {
+        $nin: [],
+      };
+      let answer2 = req.body.wardId
+      ? mongoose.Types.ObjectId(req.body.wardId)
+      : {
+          $nin: [],
+        };
+        
+          let demo=await QrHouses.aggregate([
+            {
+              '$match': {
+                'nagarpalikaId': answer1, 
+                'wardId': answer2
+              }
+            }, {
+              $group: {
+                _id: { is_wastecollected: "$is_wastecollected" },
+                Devicecount: { $sum: 1 },
+              },
+            },
+          ]);
+          console.log("demo",demo)
+          let finalArray={}
+          finalArray["bincollected"]=1
+          finalArray["binnotcollected"]=0
+          for(let i=0;i<demo.length;i++)
+        {
+              if(demo[i]["_id"]["is_wastecollected"] == "0")
+              {
+                finalArray["bincollected"]=demo[i]["Devicecount"]
+                // data["binnotcollected"]=registeredHouseCount[i]["Devicecount"]
+              }
+              else if(registeredHouseCount[i]["_id"]["is_wastecollected"] == "1")
+              {
+                finalArray["binnotcollected"]=demo[i]["Devicecount"]
+                // data["bincollected"]=registeredHouseCount[i]["Devicecount"]
+              }
+        }
+       finalArray["totalbins"]=parseInt(finalArray["binnotcollected"])+parseInt(finalArray["bincollected"])
+    let dataObject = { data:finalArray,message: "Qr codes fetched  succesfully",};
     return handleResponse(res, dataObject, 200);
   } catch (e) {
     if (e && e.message) return next(new BadRequestError(e.message));

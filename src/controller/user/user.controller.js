@@ -913,6 +913,8 @@ export const Registrationworkerlogin = async (req, res, next) => {
                 "warddata":1,
                 "nagarpalikadata":1,
                 "password":1,
+                "is_registered":1,
+                "designation":1
               }
             }
     ]);
@@ -923,6 +925,7 @@ export const Registrationworkerlogin = async (req, res, next) => {
       const validateUserData = await decrypt(password, data[0].password);
       if (validateUserData) {
         data=data[0]
+        console.log("data",data)
         let registeredHouseCount= await QrHouses.aggregate([
           {
             '$match': {
@@ -953,6 +956,8 @@ export const Registrationworkerlogin = async (req, res, next) => {
         console.log("dates223", new Date(new Date(dates223)));
         console.log("dates223", new Date (new Date(dates223).setHours(23, 59, 59)));
         console.log("todayregisteredHouseCount",todayregisteredHouseCount)
+        data["residentialqrcodescount"]=0;
+        data["commercialqrcodescount"]=0;
         for(let i=0;i<registeredHouseCount.length;i++)
         {
               if(registeredHouseCount[i]["_id"]["housetype"] == "0")
@@ -1021,6 +1026,8 @@ export const Adminlogin = async (req, res, next) => {
                 "warddata":1,
                 "nagarpalikadata":1,
                 "password":1,
+                "is_registered":1,
+                "designation":1
               }
             }
     ]);
@@ -1273,6 +1280,185 @@ export const fetchregisteredqrcodescountofregisrationworker = async (req, res, n
           // data
         };
         return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+export const sanitaryworkerlogin = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr sanitaryworkerlogin()`);
+    const { mobile_no, password ,designation } = req.body;
+    let finalArray=[]
+    var data = await Users.aggregate([
+      {
+        $match: {
+          mobile_no,
+          designation,
+        },
+      },
+      {
+        '$lookup': {
+          'from': 'nagarpalikas', 
+          'localField': 'nagarpalikaId', 
+          'foreignField': '_id', 
+          'as': 'nagarpalikadata'
+        }
+      }, {
+        '$unwind': {
+          'path': '$nagarpalikadata', 
+          'preserveNullAndEmptyArrays': true
+          }
+        },
+        {
+          '$lookup': {
+            'from': 'wards', 
+            'localField': 'wardId', 
+            'foreignField': '_id', 
+            'as': 'warddata'
+          }
+        }, {
+          '$unwind': {
+            'path': '$warddata', 
+            'preserveNullAndEmptyArrays': true
+            }
+          },
+          {
+            '$lookup': {
+              'from': 'roles', 
+              'localField': 'roleId', 
+              'foreignField': '_id', 
+              'as': 'roledata'
+            }
+          }, {
+            '$unwind': {
+              'path': '$roledata', 
+              'preserveNullAndEmptyArrays': true
+              }
+            },
+            {
+              '$lookup': {
+                'from': 'qrhouses', 
+                'localField': '_id', 
+                'foreignField': 'registrationmemberId', 
+                'as': 'registeredqrhousedata'
+              }
+            },
+            {
+              '$project': {
+                "_id":1,
+                "name":1,
+                "adharno":1,
+                "drivinglicenseno":1,
+                "username":1,
+                "email":1,
+                'mobile_no': 1,
+                "gender":1,
+                "DOB":1,
+                "roledata":1,
+                "warddata":1,
+                "nagarpalikadata":1,
+                "password":1,
+                "is_registered":1,
+                "designation":1
+              }
+            }
+    ]);
+    // console.log(data)
+    if(data.length>0)
+    {
+      console.log("userData", data[0]);
+      const validateUserData = await decrypt(password, data[0].password);
+      
+      if (validateUserData) {
+        var coworkerdata = await Users.aggregate([
+          {
+            $match: {
+              nagarpalikaId:data[0].nagarpalikadata._id ? data[0].nagarpalikadata._id :"NA",
+              wardId:data[0].warddata._id ? data[0].warddata._id : "NA", 
+              designation:req.body.designation == "0" ? "1" :"0",
+            },
+          },
+          {
+            '$lookup': {
+              'from': 'nagarpalikas', 
+              'localField': 'nagarpalikaId', 
+              'foreignField': '_id', 
+              'as': 'nagarpalikadata'
+            }
+          }, {
+            '$unwind': {
+              'path': '$nagarpalikadata', 
+              'preserveNullAndEmptyArrays': true
+              }
+            },
+            {
+              '$lookup': {
+                'from': 'wards', 
+                'localField': 'wardId', 
+                'foreignField': '_id', 
+                'as': 'warddata'
+              }
+            }, {
+              '$unwind': {
+                'path': '$warddata', 
+                'preserveNullAndEmptyArrays': true
+                }
+              },
+              {
+                '$lookup': {
+                  'from': 'roles', 
+                  'localField': 'roleId', 
+                  'foreignField': '_id', 
+                  'as': 'roledata'
+                }
+              }, {
+                '$unwind': {
+                  'path': '$roledata', 
+                  'preserveNullAndEmptyArrays': true
+                  }
+                },
+                {
+                  '$lookup': {
+                    'from': 'qrhouses', 
+                    'localField': '_id', 
+                    'foreignField': 'registrationmemberId', 
+                    'as': 'registeredqrhousedata'
+                  }
+                },
+                {
+                  '$project': {
+                    "_id":1,
+                    "name":1,
+                    "adharno":1,
+                    "drivinglicenseno":1,
+                    "username":1,
+                    "email":1,
+                    'mobile_no': 1,
+                    "gender":1,
+                    "DOB":1,
+                    "roledata":1,
+                    "warddata":1,
+                    "nagarpalikadata":1,
+                    "password":1,
+                    "is_registered":1,
+                    "designation":1
+                  }
+                }
+        ])
+        finalArray.push({"logindata":data})
+        finalArray.push({"coworkerdata":coworkerdata})
+        let dataObject = {
+          message: "User login successfully.",
+          data:finalArray
+        };
+        return handleResponse(res, dataObject);
+      }
+  }
+    return next(new UnauthorizationError());
   } catch (e) {
     if (e && e.message) return next(new BadRequestError(e.message));
     logger.log(level.error, `Error: ${JSON.stringify(e)}`);
