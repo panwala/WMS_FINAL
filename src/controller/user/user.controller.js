@@ -1506,3 +1506,66 @@ export const sanitaryworkerlogin = async (req, res, next) => {
     return next(new InternalServerError());
   }
 };
+
+
+export const checkcosanitaryworkerexist = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr checkcosanitaryworkerexist()`);
+    const { cosanitarymemeberId } = req.body;
+    let cosanitaryworkerexistcount=await Users.fetchCount({cosanitarymemeberId})
+    console.log("cosanitaryworkerexistcount",cosanitaryworkerexistcount)
+    if(cosanitaryworkerexistcount>0)
+    { 
+        throw new Error("This sanitary worker is already assigned")   
+    }
+    let dataObject = {
+      message: "Cosanitary worker is available.",
+    };
+    return handleResponse(res, dataObject); 
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+
+export const deletecosanitaryworkerexist = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr deletecosanitaryworkerexist()`);
+    const { cosanitarymemeberId } = req.body;
+    let deletecosanitaryworkerexist=await Users.updateMany
+    (
+      {cosanitarymemeberId:cosanitarymemeberId},
+      { $unset: {"cosanitarymemeberId": "" } }
+    )
+    let dataObject = {
+      message: "Cosanitary worker deleted succesfully.",
+    };
+    return handleResponse(res, dataObject); 
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+export const fetchsanitaryworkerlist = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr fetchsanitaryworkerlist()`);
+    const { designation } = req.body;
+    let fetchsanitaryworkerlist=await Users.findData({designation})
+    console.log("fetchsanitaryworkerlist",fetchsanitaryworkerlist)
+    let dataObject = {
+      message: "sanitary worker  list fetched succesfully",
+      data:fetchsanitaryworkerlist
+    };
+    return handleResponse(res, dataObject); 
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};

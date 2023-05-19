@@ -14,12 +14,18 @@ const PATH = {
   UPDATE_USER: "/updateuser/:userId",
   OPERATION_USER: "/useroperation/:userId",
   SANITARY_WORKER_LOGIN:"/sanitaryworkerlogin",
+  CHECK_COSANITARY_WORKER_EXIST:"/checkcosanitaryworkerexist",
+  DELETE_COSANITARY_WORKER_EXIST:"/deletecosanitaryworkerexist",
+  FETCH_SANITARY_WORKER_LIST:"/fetchsanitaryworkerlist",
   FETCH_REGISTERED_QR_CODES_COUNT_OF_REGISTRATION_WORKER:"/fetchregisteredqrcodescountofregistrationworker"
 };
 // routes.route(PATH.ROOT).get(usersCtrl.getAllUser);
   routes.route(PATH.FETCH_USER_ROLE_WISE).post(usersCtrl.getAllUserRoleWise);
   routes.route(PATH.FETCH_REGISTERED_QR_CODES_COUNT_OF_REGISTRATION_WORKER).post(usersCtrl.fetchregisteredqrcodescountofregisrationworker)
   routes.route(PATH.SANITARY_WORKER_LOGIN).post(usersCtrl.sanitaryworkerlogin)
+  routes.route(PATH.CHECK_COSANITARY_WORKER_EXIST).post(usersCtrl.checkcosanitaryworkerexist)
+  routes.route(PATH.DELETE_COSANITARY_WORKER_EXIST).post(usersCtrl.deletecosanitaryworkerexist)
+  routes.route(PATH.FETCH_SANITARY_WORKER_LIST).post(usersCtrl.fetchsanitaryworkerlist)
 // routes
 //   .route(PATH.FORGOT_PASSWORD)
 //   .post(
