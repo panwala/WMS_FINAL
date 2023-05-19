@@ -17,7 +17,7 @@ const schema = {
   zipcode:String,
   is_wastecollected:{
     type:String,  
-    default:"0"     //0:Not Collected 1:Collected
+    default:"2"     //0:Not Collected 1:Collected 2:remaining
   },
   reason:String,
   username:String,

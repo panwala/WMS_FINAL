@@ -685,7 +685,8 @@ export const updateSingleUser = async (req, res, next) => {
       nagarpalikaId,
       wardId,
       roleId,
-      is_registered
+      is_registered,
+      cosanitarymemeberId
     } = req.body;
     let updateDeviceObject = {
       name,
@@ -700,7 +701,8 @@ export const updateSingleUser = async (req, res, next) => {
       nagarpalikaId,
       wardId,
       roleId,
-      is_registered
+      is_registered,
+      cosanitarymemeberId
     };
     if (password) {
       password = await encrypt(password);
@@ -1262,21 +1264,59 @@ export const fetchregisteredqrcodescountofregisrationworker = async (req, res, n
   try {
     logger.log(level.info, `✔ Controllerr fetchregisteredqrcodescountofregisrationworker()`);
     const { registrationmemberId } = req.body;
-    
+    var data={}
         let registeredHouseCount= await QrHouses.aggregate([
           {
             '$match': {
               'registrationmemberId': mongoose.Types.ObjectId(registrationmemberId)
             }
           }, {
-            '$count': 'totalhouseregistered'
+            $group: {
+              _id: { housetype: "$housetype" },
+              Devicecount: { $sum: 1 },
+            },
           }
         ])
-      // console.log("userData", data);
-      console.log("registeredHouseCount",registeredHouseCount[0].totalhouseregistered)
+        var dates223 = new Date(
+          moment().tz("Asia/calcutta").format("YYYY-MM-DD")
+        );
+        let todayregisteredHouseCount= await QrHouses.aggregate([
+          {
+            '$match': {
+              'registrationmemberId': mongoose.Types.ObjectId(registrationmemberId),
+              'updatedAt': {
+                $gte:  new Date (dates223),
+                $lte: new Date (new Date(dates223).setHours(23, 59, 59)),
+              },
+            }
+          }
+        ])
+        data["registeredqrhousetoday"]=todayregisteredHouseCount.length
+        console.log("dates223", new Date(new Date(dates223)));
+        console.log("dates223", new Date (new Date(dates223).setHours(23, 59, 59)));
+        console.log("todayregisteredHouseCount",todayregisteredHouseCount)
+        data["residentialqrcodescount"]=0;
+        data["commercialqrcodescount"]=0;
+        for(let i=0;i<registeredHouseCount.length;i++)
+        {
+              if(registeredHouseCount[i]["_id"]["housetype"] == "0")
+              {
+                data["residentialqrcodescount"]=registeredHouseCount[i]["Devicecount"]
+              }
+              else if(registeredHouseCount[i]["_id"]["housetype"] == "1")
+              {
+                data["commercialqrcodescount"]=registeredHouseCount[i]["Devicecount"]
+              }
+              console.log("i",i)
+        }
+        data["count"]=parseInt(data["residentialqrcodescount"])
+        +
+        parseInt(data["commercialqrcodescount"])
+      console.log("data", data);
+      console.log("registeredHouseCount",registeredHouseCount)
         let dataObject = {
           message: "Count fetched succesfully.",
-          count:registeredHouseCount[0].totalhouseregistered,
+          data
           // data
         };
         return handleResponse(res, dataObject);
@@ -1377,8 +1417,9 @@ export const sanitaryworkerlogin = async (req, res, next) => {
         var coworkerdata = await Users.aggregate([
           {
             $match: {
-              nagarpalikaId:data[0].nagarpalikadata._id ? data[0].nagarpalikadata._id :"NA",
-              wardId:data[0].warddata._id ? data[0].warddata._id : "NA", 
+              // nagarpalikaId:data[0].nagarpalikadata._id ? data[0].nagarpalikadata._id :"NA",
+              // wardId:data[0].warddata._id ? data[0].warddata._id : "NA", 
+              cosanitarymemeberId:data[0].cosanitarymemeberId ? data[0].cosanitarymemeberId : "NA",
               designation:req.body.designation == "0" ? "1" :"0",
             },
           },

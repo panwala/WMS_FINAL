@@ -655,8 +655,9 @@ export const fetchdashboardcountforsanitaryworker = async (req, res, next) => {
           ]);
           console.log("demo",demo)
           let finalArray={}
-          finalArray["bincollected"]=1
+          finalArray["bincollected"]=0
           finalArray["binnotcollected"]=0
+          finalArray["binremaining"]=0
           for(let i=0;i<demo.length;i++)
         {
               if(demo[i]["_id"]["is_wastecollected"] == "0")
@@ -669,8 +670,13 @@ export const fetchdashboardcountforsanitaryworker = async (req, res, next) => {
                 finalArray["binnotcollected"]=demo[i]["Devicecount"]
                 // data["bincollected"]=registeredHouseCount[i]["Devicecount"]
               }
+              else if(registeredHouseCount[i]["_id"]["is_wastecollected"] == "2")
+              {
+                finalArray["binremaining"]=demo[i]["Devicecount"]
+                // data["bincollected"]=registeredHouseCount[i]["Devicecount"]
+              }
         }
-       finalArray["totalbins"]=parseInt(finalArray["binnotcollected"])+parseInt(finalArray["bincollected"])
+       finalArray["totalbins"]=parseInt(finalArray["binnotcollected"])+parseInt(finalArray["bincollected"])+parseInt(finalArray["binremaining"])
     let dataObject = { data:finalArray,message: "Qr codes fetched  succesfully",};
     return handleResponse(res, dataObject, 200);
   } catch (e) {

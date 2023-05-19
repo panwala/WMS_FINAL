@@ -3,7 +3,7 @@ import app from "./app";
 import "./config/database/mongodb";
 // require("./config/database/mongodb")
 // import "./mqtt/pubSub";
-// import "./cron-jobs";
+import "./cron-jobs";
 
 import { logger, level } from "./config/logger/logger";
 

@@ -29,7 +29,12 @@ const schema = {
     type:Boolean,
     default:false
   },
-  designation:String //0:driver ,1:co-worker
+  designation:String, //0:driver ,1:co-worker
+  cosanitarymemeberId:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+  }
 };
 
 let schemaOption = {
