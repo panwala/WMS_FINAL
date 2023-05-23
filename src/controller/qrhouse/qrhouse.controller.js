@@ -424,11 +424,54 @@ export const listonlyregisteredQrcodes = async (req, res, next) => {
         }
         else
         {
-           qrhouseDatacount=await QrHouses.fetchCount({
-            'nagarpalikaId': answer1, 
-            'wardId': answer2
-          })
-          qrhouseDatacount=qrhouseDatacount == 0 ? 10 : qrhouseDatacount
+           let demo1=await QrHouses.aggregate([
+            {
+              '$match': {
+                'nagarpalikaId': answer1, 
+                'wardId': answer2
+              }
+            }, {
+              '$lookup': {
+                'from': 'nagarpalikas', 
+                'localField': 'nagarpalikaId', 
+                'foreignField': '_id', 
+                'as': 'nagarpalikadata'
+              }
+            }, {
+              '$lookup': {
+                'from': 'wards', 
+                'localField': 'wardId', 
+                'foreignField': '_id', 
+                'as': 'warddata'
+              }
+            }, {
+              '$unwind': {
+                'path': '$nagarpalikadata', 
+                'preserveNullAndEmptyArrays': true
+              }
+            }, {
+              '$unwind': {
+                'path': '$warddata', 
+                'preserveNullAndEmptyArrays': true
+              }
+            }, {
+              '$addFields': {
+                'warddataexist': {
+                  '$ifNull': [
+                    '$warddata', null
+                  ]
+                }
+              }
+            }, {
+              '$match': {
+                'warddataexist': {
+                  '$ne': null
+                }
+              }
+            },
+          ])
+          console.log("demo1.length",demo1.length)
+          qrhouseDatacount=demo1.length == 0 ? 10 : demo1.length
         }
     let qrhouseData = await QrHouses.aggregate([
       {
