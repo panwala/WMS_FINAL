@@ -480,7 +480,7 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
       }
     ]);
     let dataObject = {
-      count: complaindatacount,
+      count: complaindata.length,
       message: "Complain details fetched successfully.",
       data: complainData,
     };
