@@ -44,31 +44,91 @@ export const viewAllcomplaint = async (req, res, next) => {
      var complaindata=await Complain.aggregate([
         {
           $match: {
-            '$or': [
-              {
-                  'nagarpalikaId': answer1
-                }, {
-                  'wardId':answer2
-                }, {
+                  'nagarpalikaId': answer1,
+                  'wardId':answer2,
                   'complainuserId':answer3
-                }
-            ]
           },
-        }])
+        },
+        {
+          '$lookup': {
+            'from': 'nagarpalikas', 
+            'localField': 'nagarpalikaId', 
+            'foreignField': '_id', 
+            'as': 'nagarpalikadata'
+          }
+        }, {
+          '$lookup': {
+            'from': 'wards', 
+            'localField': 'wardId', 
+            'foreignField': '_id', 
+            'as': 'warddata'
+          }
+        }, {
+          '$lookup': {
+            'from': 'users', 
+            'localField': 'complainuserId', 
+            'foreignField': '_id', 
+            'as': 'complainuserdata'
+          }
+        }, {
+          '$lookup': {
+            'from': 'users', 
+            'localField': 'assingnedsanitarymemeberId', 
+            'foreignField': '_id', 
+            'as': 'assignedsanitarymemberdata'
+          }
+        }, {
+          '$unwind': {
+            'path': '$nagarpalikadata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$unwind': {
+            'path': '$warddata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$unwind': {
+            'path': '$complainuserdata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$unwind': {
+            'path': '$assignedsanitarymemberdata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        },
+        {
+          '$match': {
+            '$or': [
+               {
+                'warddata.wardno': req.body.search ? {
+                  '$regex': req.body.search ?  req.body.search :"",
+                  '$options': 'i'
+                }:{
+                  '$nin': []
+                }
+              }, {
+                'nagarpalikadata.nagarpalikaname': req.body.search ? {
+                  '$regex': req.body.search ?  req.body.search :"",
+                  '$options': 'i'
+                }:{
+                  '$nin': []
+                }
+              }
+            ]
+          }
+        },
+      ])
+      console.log("complaindata.length",complaindata.length)
         complaindatacount=complaindata.length;
      complaindatacount=complaindatacount == 0 ? 10 : complaindatacount
     const complainData = await Complain.aggregate([
       {
         $match: {
-          '$or': [
-            {
-                'nagarpalikaId':answer1
-              }, {
-                'wardId':answer2
-              }, {
+                'nagarpalikaId': answer1,
+                'wardId':answer2,
                 'complainuserId':answer3
-              }
-          ]
         },
       },
       {
@@ -121,6 +181,27 @@ export const viewAllcomplaint = async (req, res, next) => {
         }
       },
       {
+        '$match': {
+          '$or': [
+             {
+              'warddata.wardno': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            }, {
+              'nagarpalikadata.nagarpalikaname': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            }
+          ]
+        }
+      },
+      {
       '$skip': req.query.skip ? parseInt(req.query.skip) : 0
       },
       {
@@ -128,7 +209,7 @@ export const viewAllcomplaint = async (req, res, next) => {
       }
     ]);
     let dataObject = {
-      count: complaindatacount,
+      count: complaindata.length,
       message: "Complain details fetched successfully.",
       data: complainData,
     };
@@ -236,8 +317,79 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
                 'wardId':answer2,
                 'assingnedsanitarymemeberId':answer3,
                 'complainstatus':req.body.complainstatus ? req.body.complainstatus : "0"
-               }
-        }])
+               },
+        },
+        {
+          '$lookup': {
+            'from': 'nagarpalikas', 
+            'localField': 'nagarpalikaId', 
+            'foreignField': '_id', 
+            'as': 'nagarpalikadata'
+          }
+        }, {
+          '$lookup': {
+            'from': 'wards', 
+            'localField': 'wardId', 
+            'foreignField': '_id', 
+            'as': 'warddata'
+          }
+        }, {
+          '$lookup': {
+            'from': 'users', 
+            'localField': 'complainuserId', 
+            'foreignField': '_id', 
+            'as': 'complainuserdata'
+          }
+        }, {
+          '$lookup': {
+            'from': 'users', 
+            'localField': 'assingnedsanitarymemeberId', 
+            'foreignField': '_id', 
+            'as': 'assignedsanitarymemberdata'
+          }
+        }, {
+          '$unwind': {
+            'path': '$nagarpalikadata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$unwind': {
+            'path': '$warddata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$unwind': {
+            'path': '$complainuserdata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$unwind': {
+            'path': '$assignedsanitarymemberdata', 
+            'preserveNullAndEmptyArrays': true
+          }
+        },
+        {
+          '$match': {
+            '$or': [
+               {
+                'warddata.wardno': req.body.search ? {
+                  '$regex': req.body.search ?  req.body.search :"",
+                  '$options': 'i'
+                }:{
+                  '$nin': []
+                }
+              }, {
+                'nagarpalikadata.nagarpalikaname': req.body.search ? {
+                  '$regex': req.body.search ?  req.body.search :"",
+                  '$options': 'i'
+                }:{
+                  '$nin': []
+                }
+              }
+            ]
+          }
+        },
+      ])
         complaindatacount=complaindata.length;
      complaindatacount=complaindatacount == 0 ? 10 : complaindatacount
     const complainData = await Complain.aggregate([
@@ -297,6 +449,27 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
         '$unwind': {
           'path': '$assignedsanitarymemberdata', 
           'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$match': {
+          '$or': [
+             {
+              'warddata.wardno': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            }, {
+              'nagarpalikadata.nagarpalikaname': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            }
+          ]
         }
       },
       {
