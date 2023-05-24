@@ -218,6 +218,12 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller viewAllcomplaintbysanitaryworker()`);
     var complaindatacount;
+     var answer1=req.body.nagarpalikaId ?  mongoose.Types.ObjectId(req.body.nagarpalikaId) :{
+        '$nin': [],
+      }
+      var answer2=req.body.wardId ? mongoose.Types.ObjectId(req.body.wardId) :{
+        '$nin': [],
+      }
       var answer3=req.body.assingnedsanitarymemeberId ?  mongoose.Types.ObjectId(req.body.assingnedsanitarymemeberId) :{
         '$nin': [],
       }
@@ -226,7 +232,9 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
         {
           $match: 
                {
-                  'assingnedsanitarymemeberId':answer3,
+                'nagarpalikaId': answer1,
+                'wardId':answer2,
+                'assingnedsanitarymemeberId':answer3,
                 'complainstatus':req.body.complainstatus ? req.body.complainstatus : "0"
                }
         }])
@@ -236,7 +244,9 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
       {
         $match: 
              {
-                'assingnedsanitarymemeberId':answer3,
+              'nagarpalikaId': answer1,
+              'wardId':answer2,
+              'assingnedsanitarymemeberId':answer3,
               'complainstatus':req.body.complainstatus ? req.body.complainstatus : "0"
              }
       },
