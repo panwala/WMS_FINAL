@@ -686,7 +686,8 @@ export const updateSingleUser = async (req, res, next) => {
       wardId,
       roleId,
       is_registered,
-      cosanitarymemeberId
+      cosanitarymemeberId,
+      designation
     } = req.body;
     let updateDeviceObject = {
       name,
@@ -702,7 +703,8 @@ export const updateSingleUser = async (req, res, next) => {
       wardId,
       roleId,
       is_registered,
-      cosanitarymemeberId
+      cosanitarymemeberId,
+      designation
     };
     if (password) {
       password = await encrypt(password);
