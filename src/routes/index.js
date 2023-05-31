@@ -6,6 +6,7 @@ import WardRoutes from "./ward";
 import NagarpalikaRoutes from "./nagarpalika";
 import QrRoutes from "./qrhouse";
 import propertytypeRoutes from "./propertyType";
+import captureWeightRoutes from "./captureweight";
 import complainRoutes from "./complain";
 import {AuthMiddleware} from "../middleware/authMiddleware"
 
@@ -18,7 +19,8 @@ const PATH = {
   NAGARPALIKA:"/nagarpalika",
   QR:"/qrs",
   PROPERTYTYPE:"/propertytpe",
-  COMPLAIN:"/complain"
+  COMPLAIN:"/complain",
+  CAPTURE_WEIGHT:"/captureweight"
 };
 
 routes.get("/healthCheck", AuthMiddleware,(req, res) => {
@@ -35,4 +37,5 @@ routes.use(PATH.NAGARPALIKA, NagarpalikaRoutes);
 routes.use(PATH.QR, QrRoutes);
 routes.use(PATH.COMPLAIN,complainRoutes)
 routes.use(PATH.PROPERTYTYPE, propertytypeRoutes);
+routes.use(PATH.CAPTURE_WEIGHT, captureWeightRoutes);
 export default routes;
