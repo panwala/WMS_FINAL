@@ -10,6 +10,7 @@ import {
   // handleError,
 } from "../../helpers/errors/custom-error";
 import { logger, level } from "../../config/logger/logger";
+import captureWeight from "../../models/captureweight.model";
 
 export const addCompaint = async (req, res, next) => {
   logger.log(level.info, `✔ Controller addCompaint()`);
@@ -261,7 +262,7 @@ export const updateSingleComplaint = async (req, res, next) => {
         complainuserId,
         assingnedsanitarymemeberId
     };
-    let complainData = await Complain.updateData(
+    let complainData = await  captureWeight.updateData(
       { _id: mongoose.Types.ObjectId(req.params.complainId) },
       updateDeviceObject
     );

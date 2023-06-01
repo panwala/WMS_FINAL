@@ -22,7 +22,7 @@ routes
   .get(
     weightCtrl.viewSingleCaptureweight
   )
-  .patch(complainCtrl.updateSingleComplaint)
+  .patch(weightCtrl.updateSingleCaptureweight)
   .delete(weightCtrl.removeSingleCaptureweight);
 
 export default routes;

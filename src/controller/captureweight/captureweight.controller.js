@@ -128,7 +128,7 @@ export const viewAllcaptureweight = async (req, res, next) => {
       console.log("complaindata.length",complaindata.length)
         complaindatacount=complaindata.length;
      complaindatacount=complaindatacount == 0 ? 10 : complaindatacount
-    const complainData = await Complain.aggregate([
+    const complainData = await captureWeight.aggregate([
         {
             $match: {
                     'nagarpalikaId': answer1,
