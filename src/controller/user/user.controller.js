@@ -1,5 +1,6 @@
 import Users from "../../models/user.model";
 import QrHouses from "../../models/qrhouse.model";
+import attendance from "../../models/attendance.model";
 import Roles from "../../models/role.model";
 import moment from "moment-timezone";
 // import Vehicles from "../../models/vechicle.model";
@@ -1409,12 +1410,25 @@ export const sanitaryworkerlogin = async (req, res, next) => {
               }
             }
     ]);
-    // console.log(data)
+    console.log(data)
     if(data.length>0)
     {
       console.log("userData", data[0]);
       const validateUserData = await decrypt(password, data[0].password);
-      
+      console.log("new Date().toLocaleString(",new Date().toLocaleString("en-US", {
+        timeZone: "Asia/calcutta",
+      }))
+      await attendance.createData({
+        nagarpalikaId:data[0].nagarpalikaId,
+        wardId:data[0].wardId,
+        sanitarymemeberId:data[0]._id,
+        loggedindatetime:new Date().toLocaleString("en-US", {
+          timeZone: "Asia/calcutta",
+        }),
+        loggedintime:moment
+        .tz(moment().format(), "Asia/calcutta")
+        .format("hh:mm:ss"),
+      })
       if (validateUserData) {
         var coworkerdata = await Users.aggregate([
           {
@@ -1570,4 +1584,179 @@ export const fetchsanitaryworkerlist = async (req, res, next) => {
     logger.log(level.error, `Error: ${JSON.stringify(e)}`);
     return next(new InternalServerError());
   }
+};
+
+
+
+export const sanitaryworkerlogout = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr sanitaryworkerlogout()`);
+    const { sanitarymemeberId, password ,designation } = req.body;
+      let isattendancerecordexist=await attendance.findOneDocument({"sanitarymemeberId":mongoose.Types.ObjectId(sanitarymemeberId),"loggedoutdatetime":{$exists:false}})
+      console.log("isattendancerecordexist",isattendancerecordexist)
+      if(isattendancerecordexist)
+      {
+        let dt1=new Date(isattendancerecordexist.loggedindatetime);
+        let dt2= new Date(new Date().toLocaleString("en-US", {
+          timeZone: "Asia/calcutta",
+        })) 
+        console.log("dt1",dt1)
+        console.log("dt2",dt2)
+        var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+        diff /= (60 * 60);
+        console.log("diff",Number(diff.toFixed(1)))
+        console.log(typeof Number(diff.toFixed(1)))
+        console.log(Math.abs(Math.round(diff)));
+        
+       let updatedRecord= await attendance.updateData({_id:isattendancerecordexist._id},{
+          loggedoutdatetime:dt2,
+          loggeouttime:moment
+            .tz(moment().format(), "Asia/calcutta")
+            .format("HH:MM:SS"),
+            workinghours:Number(diff.toFixed(1))
+          })
+        
+
+        let dataObject = {
+          message: "User logout successfully.",
+          data:updatedRecord
+        };
+        return handleResponse(res, dataObject);
+      }
+      return next(new BadRequestError("No logged in entry exist for thi sanitary worker"))
+      }
+     catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+export const fetchsanitaryworkerattendance = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr fetchsanitaryworkerattendance()`);
+    const { sanitarymemeberId } = req.body;
+    var dates2 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
+      dates2.setDate(dates2.getDate() - 1);
+      var dates3 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
+      dates3.setDate(dates3.getDate() - 8);
+      let attendanceRecord=await attendance.aggregate([
+        {
+          '$match': {
+            'sanitarymemeberId': mongoose.Types.ObjectId(sanitarymemeberId),
+            loggedindatetime: {
+              $gte: new Date(new Date(dates3)),
+              $lte: new Date(new Date(dates2).setHours(23, 59, 59)),
+            },
+          }
+        }, {
+          '$sort': {
+            'loggedindatetime': -1
+          }
+        }, {
+          '$group': {
+            '_id': {
+              '$dayOfMonth': '$loggedindatetime'
+            }, 
+            'date': {
+              '$first': '$loggedindatetime'
+            }, 
+            'total': {
+              '$sum': '$workinghours'
+            }
+          }
+        }, {
+          '$project': {
+            'date': 1, 
+            'duration': '$total', 
+            'status': {
+              '$cond': [
+                {
+                  '$gte': [
+                    '$workinghours', 9
+                  ]
+                }, 'Present', 'Absent'
+              ]
+            }
+          }
+        }
+      ])
+      console.log("aggregation pipeline result",attendanceRecord)
+      let defaultgraphData = generateDefaultPropertiesOfWeek(attendanceRecord);
+      let mergeArrayResponse = [...attendanceRecord, ...defaultgraphData];
+      attendanceRecord = sortResponsePeriodWise(mergeArrayResponse);
+      console.log("merger array", attendanceRecord);
+        let dataObject = {
+          message: "sanitary worker attendance fetched successfully.",
+          data:attendanceRecord
+        };
+        return handleResponse(res, dataObject);
+      }
+     catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+const sortResponsePeriodWise = (array) => {
+  let sortedPeriodWiseArray = array.sort(function (a, b) {
+    return Number(new Date(a.date)) - Number(new Date(b.date));
+  });
+  return sortedPeriodWiseArray;
+};
+const generateDefaultPropertiesOfWeek = (data) => {
+  let dates1 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
+  console.log("origin timezone Date", dates1);
+  let totalDays = [];
+  //dates1.setDate(dates.getDate() + 2);
+  dates1.setDate(dates1.getDate() - 9);
+  console.log(">>++", dates1);
+  for (let i = 0; i <= 7; i++) {
+    let ansDate = new Date(
+      moment(dates1.setDate(dates1.getDate() + 1))
+        .tz("Asia/calcutta")
+        .format("YYYY-MM-DD")
+    ); //.toDateString();
+    totalDays.push(ansDate);
+  }
+  console.log("list of week days", totalDays);
+  totalDays = JSON.parse(JSON.stringify(totalDays));
+  let dayIncludedInDBResponse = data.map(
+    (day) => new Date(moment(day.date).format("YYYY-MM-DD:HH:MM:SS"))
+  );
+  dayIncludedInDBResponse = JSON.parse(JSON.stringify(dayIncludedInDBResponse));
+  dayIncludedInDBResponse = dayIncludedInDBResponse.map(
+    (day) => day.split("T")[0]
+  );
+  totalDays = totalDays.map((day) => day.split("T")[0]);
+  console.log(" After dayincluded", dayIncludedInDBResponse);
+  console.log("After  daynotincluded", totalDays);
+  let dayNotIncludedInDBResponse = totalDays.filter((x) => {
+    console.log(dayIncludedInDBResponse.includes(x));
+    return !dayIncludedInDBResponse.includes(x);
+  });
+
+  console.log("notinculded", dayNotIncludedInDBResponse);
+  let generateNotIncludedDayResponse = dayNotIncludedInDBResponse.map((day) => {
+    return defaultBatteryPropertyOfWeek(day);
+  });
+  // console.log("generated response", generateNotIncludedDayResponse);
+  return generateNotIncludedDayResponse;
+};
+const defaultBatteryPropertyOfWeek = (period) => {
+  console.log(period);
+  let demoDate = new Date(
+    moment(period).tz("Asia/calcutta").format("YYYY-MM-DD")
+  );
+  let data = {
+    _id: demoDate.getDate(),
+    date: new Date(
+      moment(period).tz("Asia/calcutta").format("YYYY-MM-DD")
+    ).toISOString(),
+    duration: 0,
+    status:"Absent"
+  };
+  return data;
 };

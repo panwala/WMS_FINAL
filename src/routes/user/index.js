@@ -14,9 +14,11 @@ const PATH = {
   UPDATE_USER: "/updateuser/:userId",
   OPERATION_USER: "/useroperation/:userId",
   SANITARY_WORKER_LOGIN:"/sanitaryworkerlogin",
+  SANITARY_WORKER_LOGOUT:"/sanitaryworkerlogout",
   CHECK_COSANITARY_WORKER_EXIST:"/checkcosanitaryworkerexist",
   DELETE_COSANITARY_WORKER_EXIST:"/deletecosanitaryworkerexist",
   FETCH_SANITARY_WORKER_LIST:"/fetchsanitaryworkerlist",
+  FETCH_SANITARY_WORKER_ATTENDANCE:"/fetchsanitaryworkerattendance",
   FETCH_REGISTERED_QR_CODES_COUNT_OF_REGISTRATION_WORKER:"/fetchregisteredqrcodescountofregistrationworker"
 };
 // routes.route(PATH.ROOT).get(usersCtrl.getAllUser);
@@ -26,6 +28,7 @@ const PATH = {
   routes.route(PATH.CHECK_COSANITARY_WORKER_EXIST).post(usersCtrl.checkcosanitaryworkerexist)
   routes.route(PATH.DELETE_COSANITARY_WORKER_EXIST).post(usersCtrl.deletecosanitaryworkerexist)
   routes.route(PATH.FETCH_SANITARY_WORKER_LIST).post(usersCtrl.fetchsanitaryworkerlist)
+  routes.route(PATH.FETCH_SANITARY_WORKER_ATTENDANCE).post(usersCtrl.fetchsanitaryworkerattendance)
 // routes
 //   .route(PATH.FORGOT_PASSWORD)
 //   .post(
@@ -78,4 +81,5 @@ routes
 //     usersCtrl.updateSingleUser
 //   );
 routes.route(PATH.REGISTRATION_WORKER_LOGIN).post(usersCtrl.Registrationworkerlogin);
+routes.route(PATH.SANITARY_WORKER_LOGOUT).post(usersCtrl.sanitaryworkerlogout)
 export default routes;
