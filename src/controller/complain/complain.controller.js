@@ -262,7 +262,7 @@ export const updateSingleComplaint = async (req, res, next) => {
         complainuserId,
         assingnedsanitarymemeberId
     };
-    let complainData = await  captureWeight.updateData(
+    let complainData = await  Complain.updateData(
       { _id: mongoose.Types.ObjectId(req.params.complainId) },
       updateDeviceObject
     );

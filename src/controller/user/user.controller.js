@@ -1429,6 +1429,17 @@ export const sanitaryworkerlogin = async (req, res, next) => {
         .tz(moment().format(), "Asia/calcutta")
         .format("hh:mm:ss"),
       })
+      // await attendance.createData({
+      //   nagarpalikaId:data[0].nagarpalikaId,
+      //   wardId:data[0].wardId,
+      //   sanitarymemeberId:data[0].cosanitarymemeberId,
+      //   loggedindatetime:new Date().toLocaleString("en-US", {
+      //     timeZone: "Asia/calcutta",
+      //   }),
+      //   loggedintime:moment
+      //   .tz(moment().format(), "Asia/calcutta")
+      //   .format("hh:mm:ss"),
+      // })
       if (validateUserData) {
         var coworkerdata = await Users.aggregate([
           {
