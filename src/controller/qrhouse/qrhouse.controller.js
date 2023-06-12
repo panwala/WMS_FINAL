@@ -605,7 +605,7 @@ export const listonlyregisteredQrcodesbyparticularregistrationworker = async (re
           'wardId': answer2,
           'registrationmemberId':answer3
         })
-        
+        qrhouseDatacount=qrhouseDatacount == 0 ? 10 : qrhouseDatacount
     let qrhouseData = await QrHouses.aggregate([
       {
         '$match': {
@@ -722,6 +722,74 @@ export const fetchdashboardcountforsanitaryworker = async (req, res, next) => {
        finalArray["totalbins"]=parseInt(finalArray["binnotcollected"])+parseInt(finalArray["bincollected"])+parseInt(finalArray["binremaining"])
     let dataObject = { data:finalArray,message: "Qr codes fetched  succesfully",};
     return handleResponse(res, dataObject, 200);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+export const viewLast7daysofactivity = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controller viewLast7daysofactivity()`);
+    var dates2 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
+    dates2.setDate(dates2.getDate() - 1);
+    var dates3 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
+    dates3.setDate(dates3.getDate() - 8);
+    const last7daysofactivitydata = await QrHousesgarbagehistory.aggregate([
+      {
+        '$match': {
+          'houseId': mongoose.Types.ObjectId(req.body.houseId),
+          date: {
+            $gte: new Date(new Date(dates3)),
+            $lte: new Date(new Date(dates2).setHours(23, 59, 59)),
+          },
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'nagarpalikas', 
+          'localField': 'nagarpalikaId', 
+          'foreignField': '_id', 
+          'as': 'nagarpalikadata'
+        }
+      }, {
+        '$lookup': {
+          'from': 'wards', 
+          'localField': 'wardId', 
+          'foreignField': '_id', 
+          'as': 'warddata'
+        }
+      }, {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'sanitrationmemberId', 
+          'foreignField': '_id', 
+          'as': 'assignedsanitarymemberdata'
+        }
+      }, {
+        '$unwind': {
+          'path': '$nagarpalikadata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$unwind': {
+          'path': '$warddata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$unwind': {
+          'path': '$assignedsanitarymemberdata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+    ])
+    let dataObject = {
+      message: "Details fetched successfully.",
+      data: last7daysofactivitydata,
+    };
+    return handleResponse(res, dataObject);
   } catch (e) {
     if (e && e.message) return next(new BadRequestError(e.message));
     logger.log(level.error, `Error: ${JSON.stringify(e)}`);

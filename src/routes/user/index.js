@@ -14,6 +14,7 @@ const PATH = {
   UPDATE_USER: "/updateuser/:userId",
   OPERATION_USER: "/useroperation/:userId",
   SANITARY_WORKER_LOGIN:"/sanitaryworkerlogin",
+  END_USER_LOGIN:"/enduserlogin",
   SANITARY_WORKER_LOGOUT:"/sanitaryworkerlogout",
   CHECK_COSANITARY_WORKER_EXIST:"/checkcosanitaryworkerexist",
   DELETE_COSANITARY_WORKER_EXIST:"/deletecosanitaryworkerexist",
@@ -29,6 +30,7 @@ const PATH = {
   routes.route(PATH.DELETE_COSANITARY_WORKER_EXIST).post(usersCtrl.deletecosanitaryworkerexist)
   routes.route(PATH.FETCH_SANITARY_WORKER_LIST).post(usersCtrl.fetchsanitaryworkerlist)
   routes.route(PATH.FETCH_SANITARY_WORKER_ATTENDANCE).post(usersCtrl.fetchsanitaryworkerattendance)
+  routes.route(PATH.END_USER_LOGIN).post(usersCtrl.enduserlogin)
 // routes
 //   .route(PATH.FORGOT_PASSWORD)
 //   .post(

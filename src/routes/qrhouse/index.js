@@ -14,7 +14,8 @@ const PATH = {
   LIST_ONLY_REGISTERED_QR_CODES:"/listonlyregisteredqrcodes",
   FETCH_DASHBOARD_COUNT_FOR_SANITARY_WORKER:"/fetchdashboardcountforsanitaryworker",
   LIST_ONLY_REGISTERED_QR_CODES_BY_REGISTRATION_WORKER:"/listonlyregisteredqrcodesbyregistrationworker",
-  DELETE_MULTIPLE_QR_CODES:"/deletemultipleqrcodes"
+  DELETE_MULTIPLE_QR_CODES:"/deletemultipleqrcodes",
+  VIEW_LAST_7DAYS_OF_ACTIVITY_OF_USER:"/viewlast7daysofactivityofuser"
 //   ROLEID: "/:roleId",
 };
 routes
@@ -36,6 +37,7 @@ routes
 
   routes.route(PATH.LIST_ONLY_REGISTERED_QR_CODES).post(qrhouse.listonlyregisteredQrcodes)
   routes.route(PATH.DELETE_MULTIPLE_QR_CODES).delete(qrhouse.removemultipleqrcodes)
+  routes.route(PATH.VIEW_LAST_7DAYS_OF_ACTIVITY_OF_USER).post(qrhouse.viewLast7daysofactivity)
 //   .get(rolesCtrl.viewRole);
 // routes
 //   .route(PATH.ROLEID)

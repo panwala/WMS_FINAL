@@ -1597,6 +1597,73 @@ export const fetchsanitaryworkerlist = async (req, res, next) => {
   }
 };
 
+export const enduserlogin = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr enduserlogin()`);
+    const { mobile_no } = req.body;
+  let loggedinuserdata=await QrHouses.aggregate([
+      {
+        '$match': {
+          'mobile_no': mobile_no, 
+      }
+      }, {
+        '$lookup': {
+          'from': 'nagarpalikas', 
+          'localField': 'nagarpalikaId', 
+          'foreignField': '_id', 
+          'as': 'nagarpalikadata'
+        }
+      }, {
+        '$lookup': {
+          'from': 'wards', 
+          'localField': 'wardId', 
+          'foreignField': '_id', 
+          'as': 'warddata'
+        }
+      }, {
+        '$unwind': {
+          'path': '$nagarpalikadata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$unwind': {
+          'path': '$warddata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$addFields': {
+          'warddataexist': {
+            '$ifNull': [
+              '$warddata', null
+            ]
+          }
+        }
+      }, {
+        '$match': {
+          'warddataexist': {
+            '$ne': null
+          }
+        }
+      },
+      {
+        '$skip': req.query.skip ? parseInt(req.query.skip) : 0
+        },
+        {
+        '$limit': req.query.limit ? parseInt(req.query.limit) : qrhouseDatacount
+        }
+    ])
+    if(loggedinuserdata.length>0)
+    {
+      let dataObject = { data:loggedinuserdata,message: "User login succesfully"};
+      return handleResponse(res, dataObject, 200);
+    }
+    return next(new UnauthorizationError());
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
 
 
 export const sanitaryworkerlogout = async (req, res, next) => {

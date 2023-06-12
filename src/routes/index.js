@@ -8,6 +8,7 @@ import QrRoutes from "./qrhouse";
 import propertytypeRoutes from "./propertyType";
 import captureWeightRoutes from "./captureweight";
 import complainRoutes from "./complain";
+import deviceRoutes from "./Devices";
 import {AuthMiddleware} from "../middleware/authMiddleware"
 
 const routes = new Router();
@@ -20,7 +21,8 @@ const PATH = {
   QR:"/qrs",
   PROPERTYTYPE:"/propertytpe",
   COMPLAIN:"/complain",
-  CAPTURE_WEIGHT:"/captureweight"
+  CAPTURE_WEIGHT:"/captureweight",
+  DEVICES:"/devices"
 };
 
 routes.get("/healthCheck", AuthMiddleware,(req, res) => {
@@ -38,4 +40,5 @@ routes.use(PATH.QR, QrRoutes);
 routes.use(PATH.COMPLAIN,complainRoutes)
 routes.use(PATH.PROPERTYTYPE, propertytypeRoutes);
 routes.use(PATH.CAPTURE_WEIGHT, captureWeightRoutes);
+routes.use(PATH.DEVICES, deviceRoutes);
 export default routes;
