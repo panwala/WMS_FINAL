@@ -38,9 +38,7 @@ export const viewAllDevices = async (req, res, next) => {
       var answer2=req.body.wardId ? mongoose.Types.ObjectId(req.body.wardId) :{
         '$nin': [],
       }
-      var answer3=req.body.complainuserId ?  mongoose.Types.ObjectId(req.body.complainuserId) :{
-        '$nin': [],
-      }
+      
     
      var devicesdata=await devices.aggregate([
         {
@@ -156,7 +154,7 @@ export const viewAllDevices = async (req, res, next) => {
       '$skip': req.query.skip ? parseInt(req.query.skip) : 0
       },
       {
-      '$limit': req.query.limit ? parseInt(req.query.limit) : complaindatacount
+      '$limit': req.query.limit ? parseInt(req.query.limit) : devicesdatacount
       }
     ]);
     let dataObject = {

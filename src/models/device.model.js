@@ -13,10 +13,10 @@ const schema = {
     type:String,
   },
   deviceModel:{
-    type:Date,
+    type:String,
   },
   vehicleNumber:{
-    type:Date,
+    type:String,
   },
   nagarpalikaId: {
     type: mongoose.Schema.Types.ObjectId,

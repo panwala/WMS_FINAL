@@ -737,7 +737,7 @@ export const viewLast7daysofactivity = async (req, res, next) => {
     dates2.setDate(dates2.getDate() - 1);
     var dates3 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
     dates3.setDate(dates3.getDate() - 8);
-    const last7daysofactivitydata = await QrHousesgarbagehistory.aggregate([
+    var last7daysofactivitydata = await QrHousesgarbagehistory.aggregate([
       {
         '$match': {
           'houseId': mongoose.Types.ObjectId(req.body.houseId),
@@ -784,7 +784,44 @@ export const viewLast7daysofactivity = async (req, res, next) => {
           'preserveNullAndEmptyArrays': true
         }
       },
+      {
+        '$project': {
+          'date': 1, 
+          'is_wastecollected': '$is_wastecollected',
+          'time': {
+            '$toString': {
+              '$hour': '$date'
+            }
+          }, 
+          'timemin': {
+            '$toString': {
+              '$minute': '$date'
+            }
+          }, 
+          'timesec': {
+            '$toString': {
+              '$second': '$date'
+            }
+          } 
+        }
+      },
+      {
+        '$project': {
+          'date': 1, 
+          'is_wastecollected': 1,
+          'finalTime': {
+            '$concat': [
+              '$time', ':', '$timemin', ':', '$timesec'
+            ]
+          }
+        }
+      }
     ])
+    console.log("aggregation pipeline result",last7daysofactivitydata)
+      let defaultgraphData = generateDefaultPropertiesOfWeek(last7daysofactivitydata);
+      let mergeArrayResponse = [...last7daysofactivitydata, ...defaultgraphData];
+      last7daysofactivitydata = sortResponsePeriodWise(mergeArrayResponse);
+      console.log("merger array", last7daysofactivitydata);
     let dataObject = {
       message: "Details fetched successfully.",
       data: last7daysofactivitydata,
@@ -795,4 +832,65 @@ export const viewLast7daysofactivity = async (req, res, next) => {
     logger.log(level.error, `Error: ${JSON.stringify(e)}`);
     return next(new InternalServerError());
   }
+};
+
+const sortResponsePeriodWise = (array) => {
+  let sortedPeriodWiseArray = array.sort(function (a, b) {
+    return Number(new Date(a.date)) - Number(new Date(b.date));
+  });
+  return sortedPeriodWiseArray;
+};
+const generateDefaultPropertiesOfWeek = (data) => {
+  let dates1 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
+  console.log("origin timezone Date", dates1);
+  let totalDays = [];
+  //dates1.setDate(dates.getDate() + 2);
+  dates1.setDate(dates1.getDate() - 9);
+  console.log(">>++", dates1);
+  for (let i = 0; i <= 7; i++) {
+    let ansDate = new Date(
+      moment(dates1.setDate(dates1.getDate() + 1))
+        .tz("Asia/calcutta")
+        .format("YYYY-MM-DD")
+    ); //.toDateString();
+    totalDays.push(ansDate);
+  }
+  console.log("list of week days", totalDays);
+  totalDays = JSON.parse(JSON.stringify(totalDays));
+  let dayIncludedInDBResponse = data.map(
+    (day) => new Date(moment(day.date).format("YYYY-MM-DD:HH:MM:SS"))
+  );
+  dayIncludedInDBResponse = JSON.parse(JSON.stringify(dayIncludedInDBResponse));
+  dayIncludedInDBResponse = dayIncludedInDBResponse.map(
+    (day) => day.split("T")[0]
+  );
+  totalDays = totalDays.map((day) => day.split("T")[0]);
+  console.log(" After dayincluded", dayIncludedInDBResponse);
+  console.log("After  daynotincluded", totalDays);
+  let dayNotIncludedInDBResponse = totalDays.filter((x) => {
+    console.log(dayIncludedInDBResponse.includes(x));
+    return !dayIncludedInDBResponse.includes(x);
+  });
+
+  console.log("notinculded", dayNotIncludedInDBResponse);
+  let generateNotIncludedDayResponse = dayNotIncludedInDBResponse.map((day) => {
+    return defaultBatteryPropertyOfWeek(day);
+  });
+  // console.log("generated response", generateNotIncludedDayResponse);
+  return generateNotIncludedDayResponse;
+};
+const defaultBatteryPropertyOfWeek = (period) => {
+  console.log(period);
+  let demoDate = new Date(
+    moment(period).tz("Asia/calcutta").format("YYYY-MM-DD")
+  );
+  let data = {
+    _id: demoDate.getDate(),
+    date: new Date(
+      moment(period).tz("Asia/calcutta").format("YYYY-MM-DD")
+    ).toISOString(),
+    is_wastecollected: 2,
+    finalTime:"NA"
+  };
+  return data;
 };

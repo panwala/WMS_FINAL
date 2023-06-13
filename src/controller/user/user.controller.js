@@ -1638,20 +1638,9 @@ export const enduserlogin = async (req, res, next) => {
             ]
           }
         }
-      }, {
-        '$match': {
-          'warddataexist': {
-            '$ne': null
-          }
-        }
-      },
-      {
-        '$skip': req.query.skip ? parseInt(req.query.skip) : 0
-        },
-        {
-        '$limit': req.query.limit ? parseInt(req.query.limit) : qrhouseDatacount
-        }
+      }
     ])
+    console.log(loggedinuserdata)
     if(loggedinuserdata.length>0)
     {
       let dataObject = { data:loggedinuserdata,message: "User login succesfully"};
