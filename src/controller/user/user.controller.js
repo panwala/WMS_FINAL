@@ -1643,7 +1643,7 @@ export const enduserlogin = async (req, res, next) => {
     console.log(loggedinuserdata)
     if(loggedinuserdata.length>0)
     {
-      let dataObject = { data:loggedinuserdata,message: "User login succesfully"};
+      let dataObject = { data:loggedinuserdata[0],message: "User login succesfully"};
       return handleResponse(res, dataObject, 200);
     }
     return next(new UnauthorizationError());
@@ -1766,6 +1766,88 @@ export const fetchsanitaryworkerattendance = async (req, res, next) => {
     return next(new InternalServerError());
   }
 };
+
+
+export const changeQrcodeofregisteredHouse = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr changeQrcodeofregisteredHouse()`);
+    const { mobile_no } = req.body;
+  let qrhousedataexist=await QrHouses.findData({mobile_no})
+    console.log("qrhousedataexist",qrhousedataexist)
+    if(qrhousedataexist  && qrhousedataexist.length > 0)
+    {
+      const {
+        housetype,
+        propertyType,
+        houseno,
+        houseaddress,
+        city,
+        zipcode,
+        is_wastecollected,
+        reason,
+        username,
+        mobile_no,
+        lat,
+        long,
+        nagarpalikaId,
+        wardId,
+        registrationmemberId,
+        sanitrationmemberId,
+        date
+      }=qrhousedataexist[0]
+      console.log("housetype",housetype)
+      await QrHouses.deleteData({_id:qrhousedataexist[0]._id})
+    let qrhouseData=  await QrHouses.createData({
+        housetype,
+        propertyType,
+        houseno,
+        houseaddress,
+        city,
+        zipcode,
+        is_wastecollected,
+        reason,
+        username,
+        mobile_no,
+        lat,
+        long,
+        nagarpalikaId,
+        wardId,
+        registrationmemberId,
+        sanitrationmemberId,
+        date
+      })
+      let dataObject = { data:qrhouseData,message: "Qr for house changed succesfully"};
+      return handleResponse(res, dataObject, 200);
+    }
+    throw new Error("The mobile number you have provided is not registered with any of house")
+    // return next(new UnauthorizationError());
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+export const checkmobilenumberalreadyregisteredforhouse = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr checkmobilenumberalreadyregisteredforhouse()`);
+    const { mobile_no } = req.body;
+   let qrhousedataexist=await QrHouses.findData({mobile_no})
+    console.log("qrhousedataexist",qrhousedataexist)
+    if(qrhousedataexist && qrhousedataexist.length > 0)
+    {
+      throw new Error("The mobile number you have provided is already registered with any of house")
+      
+    }
+    let dataObject = { message: "Mobile number is not registered with any house"};
+    return handleResponse(res, dataObject, 200);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
 
 const sortResponsePeriodWise = (array) => {
   let sortedPeriodWiseArray = array.sort(function (a, b) {

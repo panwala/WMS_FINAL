@@ -20,6 +20,8 @@ const PATH = {
   DELETE_COSANITARY_WORKER_EXIST:"/deletecosanitaryworkerexist",
   FETCH_SANITARY_WORKER_LIST:"/fetchsanitaryworkerlist",
   FETCH_SANITARY_WORKER_ATTENDANCE:"/fetchsanitaryworkerattendance",
+  REGENRATE_REGISTERED_HOUSE_QR_CODE:"/regenerateregisteredhouseqrcode",
+  CHECK_MOBILE_NUMBER_ALREADY_REGISTERED_FOR_QR_HOUSE:"/checkmobilenumberalreadyregisteredforhouse",
   FETCH_REGISTERED_QR_CODES_COUNT_OF_REGISTRATION_WORKER:"/fetchregisteredqrcodescountofregistrationworker"
 };
 // routes.route(PATH.ROOT).get(usersCtrl.getAllUser);
@@ -31,6 +33,8 @@ const PATH = {
   routes.route(PATH.FETCH_SANITARY_WORKER_LIST).post(usersCtrl.fetchsanitaryworkerlist)
   routes.route(PATH.FETCH_SANITARY_WORKER_ATTENDANCE).post(usersCtrl.fetchsanitaryworkerattendance)
   routes.route(PATH.END_USER_LOGIN).post(usersCtrl.enduserlogin)
+  routes.route(PATH.REGENRATE_REGISTERED_HOUSE_QR_CODE).post(usersCtrl.changeQrcodeofregisteredHouse)
+  routes.route(PATH.CHECK_MOBILE_NUMBER_ALREADY_REGISTERED_FOR_QR_HOUSE).post(usersCtrl.checkmobilenumberalreadyregisteredforhouse)
 // routes
 //   .route(PATH.FORGOT_PASSWORD)
 //   .post(
