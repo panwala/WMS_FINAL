@@ -19,7 +19,14 @@ const PATH = {
   CHECK_COSANITARY_WORKER_EXIST:"/checkcosanitaryworkerexist",
   DELETE_COSANITARY_WORKER_EXIST:"/deletecosanitaryworkerexist",
   FETCH_SANITARY_WORKER_LIST:"/fetchsanitaryworkerlist",
+  ADD_VEHILCE:"/addVehicle",
+  EDIT_VEHILCE:"/updateVehicle",
+  REMOVE_VEHILCE:"/deleteVehicle", 
+  VIEW_ALL_VEHILCE:"/viewallVehicle",
+  VIEW_ALL_TODAY_ASSIGNED_VEHICLES:"/viewalltodayassignedvehicles",
+  ASSING_VEHICLE_TO_SANITARY_WORKER:"/assignvehicletosanitaryworker",
   FETCH_SANITARY_WORKER_ATTENDANCE:"/fetchsanitaryworkerattendance",
+  CHECK_VEHICLE_ALREADY_ASSIGNED_TO_SANITARY_WORKER:"/checkvehiclealreadyassignedtosanitaryworker",
   REGENRATE_REGISTERED_HOUSE_QR_CODE:"/regenerateregisteredhouseqrcode",
   CHECK_MOBILE_NUMBER_ALREADY_REGISTERED_FOR_QR_HOUSE:"/checkmobilenumberalreadyregisteredforhouse",
   FETCH_REGISTERED_QR_CODES_COUNT_OF_REGISTRATION_WORKER:"/fetchregisteredqrcodescountofregistrationworker"
@@ -35,6 +42,13 @@ const PATH = {
   routes.route(PATH.END_USER_LOGIN).post(usersCtrl.enduserlogin)
   routes.route(PATH.REGENRATE_REGISTERED_HOUSE_QR_CODE).post(usersCtrl.changeQrcodeofregisteredHouse)
   routes.route(PATH.CHECK_MOBILE_NUMBER_ALREADY_REGISTERED_FOR_QR_HOUSE).post(usersCtrl.checkmobilenumberalreadyregisteredforhouse)
+  routes.route(PATH.ADD_VEHILCE).post(usersCtrl.addVehicles)
+  routes.route(PATH.EDIT_VEHILCE).post(usersCtrl.updateSingleVehicle)
+  routes.route(PATH.REMOVE_VEHILCE).post(usersCtrl.removemultiplevehicles)
+  routes.route(PATH.VIEW_ALL_VEHILCE).post(usersCtrl.viewAllVehicles)
+  routes.route(PATH.VIEW_ALL_TODAY_ASSIGNED_VEHICLES).post(usersCtrl.viewAlltodayassignedvehicles)
+  routes.route(PATH.ASSING_VEHICLE_TO_SANITARY_WORKER).post(usersCtrl.assingVehiclestosanitaryworker)
+  routes.route(PATH.CHECK_VEHICLE_ALREADY_ASSIGNED_TO_SANITARY_WORKER).post(usersCtrl.checkvehiclealreadyassignedtosanitarworker)
 // routes
 //   .route(PATH.FORGOT_PASSWORD)
 //   .post(

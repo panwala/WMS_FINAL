@@ -1,6 +1,8 @@
 import Users from "../../models/user.model";
 import QrHouses from "../../models/qrhouse.model";
 import attendance from "../../models/attendance.model";
+import vehicles from "../../models/vehicle.model";
+import vehicleshistory from "../../models/vehiclehistory.model";
 import Roles from "../../models/role.model";
 import moment from "moment-timezone";
 // import Vehicles from "../../models/vechicle.model";
@@ -1797,7 +1799,7 @@ export const changeQrcodeofregisteredHouse = async (req, res, next) => {
       }=qrhousedataexist[0]
       console.log("housetype",housetype)
       await QrHouses.deleteData({_id:qrhousedataexist[0]._id})
-    let qrhouseData=  await QrHouses.createData({
+    let qrhouseData=  await QrHouses.updateData({_id:mongoose.Types.ObjectId(req.body.qrId)},{
         housetype,
         propertyType,
         houseno,
@@ -1849,6 +1851,309 @@ export const checkmobilenumberalreadyregisteredforhouse = async (req, res, next)
 };
 
 
+
+export const  assingVehiclestosanitaryworker = async (req, res, next) => {
+  logger.log(level.info, `✔ Controller assingVehiclestosanitaryworker()`);
+  try {
+    req.body.date= new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
+    let ans = await vehicleshistory.createData(req.body);
+    console.log("ans", ans);
+    let dataObject = { message: "vehicleshistory created succesfully" };
+    return handleResponse(res, dataObject, 201);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+export const  addVehicles = async (req, res, next) => {
+  logger.log(level.info, `✔ Controller addVehicles()`);
+  try {
+    req.body.date= new Date().toLocaleString("en-US", {
+      timeZone: "Asia/calcutta",
+    });
+    let ans = await vehicles.createData(req.body);
+    console.log("ans", ans);
+    let dataObject = { data:ans,message: "Vehicle created succesfully" };
+    return handleResponse(res, dataObject, 201);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+export const updateSingleVehicle = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controller updateSingleVehicle()`);
+    let {
+      vehicleNo,
+      wardId,
+      nagarpalikaId,
+      sanitarymemeberId
+    } = req.body;
+    let updateDeviceObject = {
+      vehicleNo,
+      wardId,
+      nagarpalikaId,
+      sanitarymemeberId
+    };
+    let vehicleData = await vehicles.updateData(
+      { _id: mongoose.Types.ObjectId(req.query.vehicleId) },
+      updateDeviceObject
+    );
+    let dataObject = {
+      message: "Details updated successfully.",
+      data: vehicleData,
+    };
+    return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+export const removemultiplevehicles = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controller removemultiplevehicles()`);
+    /*let removedData =*/ await vehicles.deleteMultipleData({_id:req.body.vehicleId});
+    let dataObject = {
+      message: "vehicle deleted successfully.",
+      // data: removedData,
+    };
+    return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+export const viewAllVehicles = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controller viewAllVehicles()`);
+    let vehicleData =await vehicles.findData({});
+    let dataObject = {
+      message: "vehicle data fetched successfully.",
+      data: vehicleData,
+    };
+    return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+export const viewAlltodayassignedvehicles = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controller viewAlltodayassignedvehicles()`);
+    var todayvehicldatacount
+    let vehicleData =await vehicleshistory.aggregate([
+      {
+        '$match': {
+          'date': new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD")), 
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'vehicles', 
+          'localField': 'vehicleId', 
+          'foreignField': '_id', 
+          'as': 'vehicledata'
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'sanitarymemeberId', 
+          'foreignField': '_id', 
+          'as': 'userdata'
+        }
+      },
+       {
+        '$lookup': {
+          'from': 'nagarpalikas', 
+          'localField': 'nagarpalikaId', 
+          'foreignField': '_id', 
+          'as': 'nagarpalikadata'
+        }
+      }, {
+        '$lookup': {
+          'from': 'wards', 
+          'localField': 'wardId', 
+          'foreignField': '_id', 
+          'as': 'warddata'
+        }
+      }, {
+        '$unwind': {
+          'path': '$nagarpalikadata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$unwind': {
+          'path': '$warddata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$unwind': {
+          'path': '$userdata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },{
+        '$unwind': {
+          'path': '$vehicledata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$match': {
+          '$or': [
+            {
+              'nagarpalikadata.nagarpalikaname': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            },
+             {
+              'warddata.wardno': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            }
+          ]
+        }
+      },
+    ]);
+    todayvehicldatacount=vehicleData.length;
+    todayvehicldatacount=todayvehicldatacount == 0 ? 10 : todayvehicldatacount
+    let vehicleData1 =await vehicleshistory.aggregate([
+      {
+        '$match': {
+          'date': new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD")), 
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'vehicles', 
+          'localField': 'vehicleId', 
+          'foreignField': '_id', 
+          'as': 'vehicledata'
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'sanitarymemeberId', 
+          'foreignField': '_id', 
+          'as': 'userdata'
+        }
+      },
+       {
+        '$lookup': {
+          'from': 'nagarpalikas', 
+          'localField': 'nagarpalikaId', 
+          'foreignField': '_id', 
+          'as': 'nagarpalikadata'
+        }
+      }, {
+        '$lookup': {
+          'from': 'wards', 
+          'localField': 'wardId', 
+          'foreignField': '_id', 
+          'as': 'warddata'
+        }
+      }, {
+        '$unwind': {
+          'path': '$nagarpalikadata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      }, {
+        '$unwind': {
+          'path': '$warddata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$unwind': {
+          'path': '$userdata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },{
+        '$unwind': {
+          'path': '$vehicledata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$match': {
+          '$or': [
+            {
+              'nagarpalikadata.nagarpalikaname': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            },
+             {
+              'warddata.wardno': req.body.search ? {
+                '$regex': req.body.search ?  req.body.search :"",
+                '$options': 'i'
+              }:{
+                '$nin': []
+              }
+            }
+          ]
+        }
+      },
+      {
+        '$skip': req.query.skip ? parseInt(req.query.skip) : 0
+        },
+        {
+        '$limit': req.query.limit ? parseInt(req.query.limit) : todayvehicldatacount
+       }
+    ]);
+    let dataObject = {
+      message: "vehicle data fetched successfully.",
+      data: vehicleData,
+    };
+    return handleResponse(res, dataObject);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+
+export const  checkvehiclealreadyassignedtosanitarworker = async (req, res, next) => {
+  logger.log(level.info, `✔ Controller checkvehiclealreadyassignedtosanitarworker()`);
+  try {
+    let ans = await vehicleshistory.findData(
+      {
+        date:new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD")),
+        vehicleId:mongoose.Types.ObjectId(req.body.vehicleId)
+      }
+    );
+    console.log("ans",ans)
+    if(ans && ans.length>0)
+    {
+      throw new Error("Vehicle is already associated with one of sanitary worker.Please choose another one")
+    }
+    let dataObject = { message: "vehicle is available" };
+    return handleResponse(res, dataObject, 200);
+  } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
 const sortResponsePeriodWise = (array) => {
   let sortedPeriodWiseArray = array.sort(function (a, b) {
     return Number(new Date(a.date)) - Number(new Date(b.date));

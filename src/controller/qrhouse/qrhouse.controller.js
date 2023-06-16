@@ -600,7 +600,7 @@ export const listonlyregisteredQrcodesbyparticularregistrationworker = async (re
         : {
             $nin: [],
           };
-        const qrhouseDatacount=await QrHouses.fetchCount({
+        var qrhouseDatacount=await QrHouses.fetchCount({
           'nagarpalikaId': answer1, 
           'wardId': answer2,
           'registrationmemberId':answer3
