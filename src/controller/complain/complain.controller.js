@@ -320,7 +320,9 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
                 'nagarpalikaId': answer1,
                 'wardId':answer2,
                 'assingnedsanitarymemeberId':answer3,
-                'complainstatus':req.body.complainstatus ? req.body.complainstatus : "0",
+                'complainstatus':req.body.complainstatus ? req.body.complainstatus : {
+                  '$nin': [],
+                },
                 'complainuserId':answer4
                },
         },
@@ -404,7 +406,9 @@ export const viewAllcomplaintbysanitaryworker = async (req, res, next) => {
               'nagarpalikaId': answer1,
               'wardId':answer2,
               'assingnedsanitarymemeberId':answer3,
-              'complainstatus':req.body.complainstatus ? req.body.complainstatus : "0",
+              'complainstatus':req.body.complainstatus ? req.body.complainstatus : {
+                '$nin': [],
+              },
               'complainuserId':answer4
              }
       },
