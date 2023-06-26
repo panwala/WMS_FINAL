@@ -15,7 +15,7 @@ scheduleJob(JOB_TIME, async (fireDate) => {
     "hi cron job run succesfully"
   );
   try {
-        console.log("check cron job run succesfully")
+        console.log("check cron job run succesfully",new Date())
   } catch (error) {
     logger.log(level.error, `>> Device state JOB error ${error}`);
   }
