@@ -1440,29 +1440,20 @@ export const sanitaryworkerlogin = async (req, res, next) => {
       console.log("new Date().toLocaleString(",new Date().toLocaleString("en-US", {
         timeZone: "Asia/calcutta",
       }))
-      await attendance.createData({
-        nagarpalikaId:data[0].nagarpalikaId,
-        wardId:data[0].wardId,
-        sanitarymemeberId:data[0]._id,
-        loggedindatetime:new Date().toLocaleString("en-US", {
-          timeZone: "Asia/calcutta",
-        }),
-        loggedintime:moment
-        .tz(moment().format(), "Asia/calcutta")
-        .format("hh:mm:ss"),
-      })
-      // await attendance.createData({
-      //   nagarpalikaId:data[0].nagarpalikaId,
-      //   wardId:data[0].wardId,
-      //   sanitarymemeberId:data[0].cosanitarymemeberId,
-      //   loggedindatetime:new Date().toLocaleString("en-US", {
-      //     timeZone: "Asia/calcutta",
-      //   }),
-      //   loggedintime:moment
-      //   .tz(moment().format(), "Asia/calcutta")
-      //   .format("hh:mm:ss"),
-      // })
+      
       if (validateUserData) {
+        await Users.updateData({_id:mongoose.Types.ObjectId(data[0]._id)},{is_active:true})
+        await attendance.createData({
+          nagarpalikaId:data[0].nagarpalikaId,
+          wardId:data[0].wardId,
+          sanitarymemeberId:data[0]._id,
+          loggedindatetime:new Date().toLocaleString("en-US", {
+            timeZone: "Asia/calcutta",
+          }),
+          loggedintime:moment
+          .tz(moment().format(), "Asia/calcutta")
+          .format("hh:mm:ss"),
+        })
         var coworkerdata = await Users.aggregate([
           {
             $match: {
@@ -1547,7 +1538,7 @@ export const sanitaryworkerlogin = async (req, res, next) => {
         };
         return handleResponse(res, dataObject);
       }
-  }
+    }
     return next(new UnauthorizationError());
   } catch (e) {
     if (e && e.message) return next(new BadRequestError(e.message));
