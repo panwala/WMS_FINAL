@@ -2,7 +2,7 @@ import { scheduleJob } from "node-schedule";
 import { logger, level } from "../config/logger/logger";
 import moment from "moment";
 // import Devices from "../models/device.model";
-import QrHouses from "../models/qrhouse.model";
+import Users from "../models/user.model";
 import attendance from "../models/attendance.model";
 // import deviceHistory from "../models/deviceHistory.model";
 // import * as DeviceSrv from "../services/device/device.service";
@@ -21,6 +21,7 @@ scheduleJob(JOB_TIME, async (fireDate) => {
       })
       console.log("currentdatetime",currentdatetime)
   try {
+    await Users.updateMany({},{is_active:false})
     let isattendancerecordsexist=await attendance.findData({"loggedoutdatetime":{$exists:false}})
     for(let i=0;i<isattendancerecordsexist.length;i++)
     {

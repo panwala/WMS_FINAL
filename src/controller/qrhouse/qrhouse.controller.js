@@ -705,12 +705,13 @@ export const fetchdashboardcountforsanitaryworker = async (req, res, next) => {
         {
               if(demo[i]["_id"]["is_wastecollected"] == "0")
               {
-                finalArray["bincollected"]=demo[i]["Devicecount"]
+                //binnotcollected
+                finalArray["binnotcollected"]=demo[i]["Devicecount"]
                 // data["binnotcollected"]=registeredHouseCount[i]["Devicecount"]
               }
               else if(demo[i]["_id"]["is_wastecollected"] == "1")
               {
-                finalArray["binnotcollected"]=demo[i]["Devicecount"]
+                finalArray["bincollected"]=demo[i]["Devicecount"]
                 // data["bincollected"]=registeredHouseCount[i]["Devicecount"]
               }
               else if(demo[i]["_id"]["is_wastecollected"] == "2")

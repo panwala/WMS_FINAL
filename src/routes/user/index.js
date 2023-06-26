@@ -16,6 +16,7 @@ const PATH = {
   SANITARY_WORKER_LOGIN:"/sanitaryworkerlogin",
   END_USER_LOGIN:"/enduserlogin",
   SANITARY_WORKER_LOGOUT:"/sanitaryworkerlogout",
+  REGISTRATION_WORKER_LOGOUT:"/registrationworkerlogout",
   CHECK_COSANITARY_WORKER_EXIST:"/checkcosanitaryworkerexist",
   DELETE_COSANITARY_WORKER_EXIST:"/deletecosanitaryworkerexist",
   FETCH_SANITARY_WORKER_LIST:"/fetchsanitaryworkerlist",
@@ -43,6 +44,7 @@ const PATH = {
   routes.route(PATH.REGENRATE_REGISTERED_HOUSE_QR_CODE).post(usersCtrl.changeQrcodeofregisteredHouse)
   routes.route(PATH.CHECK_MOBILE_NUMBER_ALREADY_REGISTERED_FOR_QR_HOUSE).post(usersCtrl.checkmobilenumberalreadyregisteredforhouse)
   routes.route(PATH.ADD_VEHILCE).post(usersCtrl.addVehicles)
+  routes.route(PATH.REGISTRATION_WORKER_LOGOUT).post(usersCtrl.Registrationworkerlogout)
   routes.route(PATH.EDIT_VEHILCE).post(usersCtrl.updateSingleVehicle)
   routes.route(PATH.REMOVE_VEHILCE).post(usersCtrl.removemultiplevehicles)
   routes.route(PATH.VIEW_ALL_VEHILCE).post(usersCtrl.viewAllVehicles)

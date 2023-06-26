@@ -933,6 +933,7 @@ export const Registrationworkerlogin = async (req, res, next) => {
       if (validateUserData) {
         data=data[0]
         console.log("data",data)
+        await Users.updateData({_id:mongoose.Types.ObjectId(data._id)},{is_active:true})
         let registeredHouseCount= await QrHouses.aggregate([
           {
             '$match': {
@@ -990,6 +991,25 @@ export const Registrationworkerlogin = async (req, res, next) => {
   }
     return next(new UnauthorizationError());
   } catch (e) {
+    if (e && e.message) return next(new BadRequestError(e.message));
+    logger.log(level.error, `Error: ${JSON.stringify(e)}`);
+    return next(new InternalServerError());
+  }
+};
+
+export const Registrationworkerlogout = async (req, res, next) => {
+  try {
+    logger.log(level.info, `✔ Controllerr Registrationworkerlogout()`);
+    const { registrationmemeberId } = req.body;
+   let updatedRecord= await Users.updateData({_id:mongoose.Types.ObjectId(registrationmemeberId)},{is_active:false})
+
+        let dataObject = {
+          message: "User logout successfully.",
+          data:updatedRecord
+        };
+        return handleResponse(res, dataObject);
+      }
+     catch (e) {
     if (e && e.message) return next(new BadRequestError(e.message));
     logger.log(level.error, `Error: ${JSON.stringify(e)}`);
     return next(new InternalServerError());
@@ -1537,6 +1557,7 @@ export const sanitaryworkerlogin = async (req, res, next) => {
 };
 
 
+
 export const checkcosanitaryworkerexist = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controllerr checkcosanitaryworkerexist()`);
@@ -1685,7 +1706,7 @@ export const sanitaryworkerlogout = async (req, res, next) => {
             workinghours:Number(diff.toFixed(1))
           })
         
-
+          await Users.updateData({_id:mongoose.Types.ObjectId(sanitarymemeberId)},{is_active:false})
         let dataObject = {
           message: "User logout successfully.",
           data:updatedRecord
@@ -2054,6 +2075,14 @@ export const viewAlltodayassignedvehicles = async (req, res, next) => {
           'as': 'userdata'
         }
       },
+      {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'registrationmemeberId', 
+          'foreignField': '_id', 
+          'as': 'reguserdata'
+        }
+      },
        {
         '$lookup': {
           'from': 'nagarpalikas', 
@@ -2091,6 +2120,12 @@ export const viewAlltodayassignedvehicles = async (req, res, next) => {
         }
       },
       {
+        '$unwind': {
+          'path': '$reguserdata', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
         '$match': {
           '$or': [
             {
@@ -2121,7 +2156,8 @@ export const viewAlltodayassignedvehicles = async (req, res, next) => {
     ]);
     let dataObject = {
       message: "vehicle data fetched successfully.",
-      data: vehicleData,
+      data: vehicleData1,
+      count:vehicleData.length
     };
     return handleResponse(res, dataObject);
   } catch (e) {

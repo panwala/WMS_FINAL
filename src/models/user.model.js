@@ -34,6 +34,10 @@ const schema = {
   {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
+  },
+  is_active:{
+    type:Boolean,
+    default:false
   }
 };
 

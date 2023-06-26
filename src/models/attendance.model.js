@@ -30,6 +30,10 @@ const schema = {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
   },
+  registrationmemeberId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+  },
 };
 
 let schemaOption = {
