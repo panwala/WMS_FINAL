@@ -6,13 +6,13 @@ import Users from "../models/user.model";
 import attendance from "../models/attendance.model";
 // import deviceHistory from "../models/deviceHistory.model";
 // import * as DeviceSrv from "../services/device/device.service";
-const JOB_TIME = "30 08 * * *";   //"30 17 * * *"
+const JOB_TIME = "30 15 * * *";   //"30 17 * * *"
 const MIN = 15; // this minute ago data should be update
 
 scheduleJob(JOB_TIME, async (fireDate) => {
   logger.log(
     level.info,
-    `sanitary worker logout CRON JOBS RUN SUCCESFULLY`
+    `sanitary worker logout CRON JOBS RUN SUCCESFULLY`, new Date()
   );
     var currentdatetime=new Date().toLocaleString("en-US", {
         timeZone: "Asia/calcutta",

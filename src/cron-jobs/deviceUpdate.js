@@ -5,7 +5,7 @@ import moment from "moment";
 import QrHouses from "../models/qrhouse.model";
 // import deviceHistory from "../models/deviceHistory.model";
 // import * as DeviceSrv from "../services/device/device.service";
-const JOB_TIME = "30 10 * * *";   //"30 17 * * *"
+const JOB_TIME = "30 17 * * *";   //"30 17 * * *"
 const MIN = 15; // this minute ago data should be update
 
 scheduleJob(JOB_TIME, async (fireDate) => {
