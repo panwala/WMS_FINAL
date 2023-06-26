@@ -12,9 +12,7 @@ const MIN = 15; // this minute ago data should be update
 scheduleJob(JOB_TIME, async (fireDate) => {
   logger.log(
     level.info,
-    `>> Device state supposed to run at ${moment(
-      fireDate
-    ).format()} , but actually ran at ${moment().format()}`
+    `sanitary worker logout CRON JOBS RUN SUCCESFULLY`
   );
     var currentdatetime=new Date().toLocaleString("en-US", {
         timeZone: "Asia/calcutta",

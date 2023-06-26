@@ -11,9 +11,7 @@ const MIN = 15; // this minute ago data should be update
 scheduleJob(JOB_TIME, async (fireDate) => {
   logger.log(
     level.info,
-    `>> Device state supposed to run at ${moment(
-      fireDate
-    ).format()} , but actually ran at ${moment().format()}`
+    `deviceUpdate Cron Job Run Succesfully`
   );
 
   try {
