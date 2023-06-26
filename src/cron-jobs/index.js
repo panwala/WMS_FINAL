@@ -1,3 +1,3 @@
 import "./deviceUpdate";
 import "./sanitaryworkerlogout";
-import "./check"
+// import "./check"
