@@ -735,7 +735,7 @@ export const viewLast7daysofactivity = async (req, res, next) => {
   try {
     logger.log(level.info, `✔ Controller viewLast7daysofactivity()`);
     var dates2 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
-    dates2.setDate(dates2.getDate() - 1);
+    dates2.setDate(dates2.getDate());
     var dates3 = new Date(moment().tz("Asia/calcutta").format("YYYY-MM-DD"));
     dates3.setDate(dates3.getDate() - 8);
     var last7daysofactivitydata = await QrHousesgarbagehistory.aggregate([
