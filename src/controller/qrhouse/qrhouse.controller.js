@@ -890,7 +890,7 @@ const defaultBatteryPropertyOfWeek = (period) => {
     date: new Date(
       moment(period).tz("Asia/calcutta").format("YYYY-MM-DD")
     ).toISOString(),
-    is_wastecollected: 2,
+    is_wastecollected: "2",
     finalTime:"NA"
   };
   return data;
