@@ -250,7 +250,11 @@ export const updateSingleComplaint = async (req, res, next) => {
         nagarpalikaId,
         wardId,
         complainuserId,
-        assingnedsanitarymemeberId
+        assingnedsanitarymemeberId,
+        lat,
+        long,
+        address,
+        name,
             } = req.body;
     let updateDeviceObject = {
         complainImages,
@@ -260,7 +264,11 @@ export const updateSingleComplaint = async (req, res, next) => {
         nagarpalikaId,
         wardId,
         complainuserId,
-        assingnedsanitarymemeberId
+        assingnedsanitarymemeberId,
+        lat,
+        long,
+        address,
+        name,
     };
     let complainData = await  Complain.updateData(
       { _id: mongoose.Types.ObjectId(req.params.complainId) },

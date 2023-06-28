@@ -10,6 +10,11 @@ const schema = {
   complainDescription:{
     type:String
   },
+  lat:String,
+  long:String,
+  address:String,
+  name:String,
+  mobileno:String,
   complainstatus:{
     type:String,  
     default:"0"     //0:pending, 1:completed,2 :not completed
